@@ -2,7 +2,7 @@ import ReduxStoreProvider from "@/utils/providers/redux-store-provider";
 import "./globals.css";
 import MantineThemeProvider from "@/utils/providers/theme-provider";
 import { ColorSchemeScript } from "@mantine/core";
-
+import '@mantine/core/styles.css';
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
