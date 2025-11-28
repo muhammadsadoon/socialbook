@@ -1,5 +1,5 @@
 "use client";
-import dispatchSignUpState from '@/utils/redux/store/actions/auth-action/auth-action';
+import {dispatchSignUpState} from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignUpFormHandlerType } from '@/utils/types/components-props';
 import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'

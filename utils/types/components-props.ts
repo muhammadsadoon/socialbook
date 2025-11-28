@@ -12,3 +12,8 @@ export type SendSignUpFormHandlerType = {
     password: string;
     termsOfService: boolean;
 }
+export type SendSignInFormHandlerType = {
+    email: string;
+    password: string;
+    termsOfService: boolean;
+}
