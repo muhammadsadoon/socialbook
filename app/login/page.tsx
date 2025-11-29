@@ -24,9 +24,11 @@ const LogInScreen = () => {
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const signUpFromHanlder = (values: SendSignInFormHandlerType): void => {
-        toast("😎 It's time to connect with us!");
-        dispatch(dispatchSignInState(values));
+    const signInFromHanlder = (values: SendSignInFormHandlerType): void => {
+        dispatch(dispatchSignInState(values)).finally(() => {
+            toast("🥳 Form is submitted");
+            form.reset();
+        });
     }
 
     return (
@@ -41,7 +43,7 @@ const LogInScreen = () => {
                     className='text-2xl my-5 text-slate-200 font-semibold'
                     dangerouslySetInnerHTML={{ __html: 'Log in' }}
                 /></Typography>
-                <form className='my-5' onSubmit={form.onSubmit((values) => signUpFromHanlder(values))}>
+                <form className='my-5' onSubmit={form.onSubmit((values) => signInFromHanlder(values))}>
                     <TextInput
                         withAsterisk
                         label="Email"
