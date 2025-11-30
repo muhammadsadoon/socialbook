@@ -9,7 +9,6 @@ const dispatchSignInState = (payload: SendSignInFormHandlerType) => {
         try {
             const auth = getAuth(app)
             const signInUser = await signInWithEmailAndPassword(auth, payload.email, payload.password);
-            console.log("user sign up", signInUser);
             dispatch({
                 type: SET_AUTH_STATE,
                 payload: { payload: payload, signInUser },
@@ -26,10 +25,8 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
     return async (dispatch: Function) => {
         try {
             const auth = getAuth(app)
-            const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
-            const docRef = await addDoc(collection(db, "Users"), payload);
-            console.log("Document written with ID: ", docRef.id);
-            console.log("user sign up", createUser);
+            const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
+            const docRef = await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid });
             dispatch({
                 type: SET_AUTH_STATE,
                 payload: payload,

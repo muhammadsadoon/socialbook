@@ -6,16 +6,19 @@ import '@mantine/core/styles.css';
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-mantine-color-scheme="dark">
+    <html lang="en" data-mantine-color-scheme="light">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript
+          forceColorScheme="light"
+          defaultColorScheme="light"
+        />
       </head>
       <body
         cz-shortcut-listen="true"
       >
         <ReduxStoreProvider>
           <MantineThemeProvider>
-              {children}
+            {children}
           </MantineThemeProvider>
         </ReduxStoreProvider>
       </body>

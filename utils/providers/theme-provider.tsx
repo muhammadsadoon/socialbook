@@ -20,7 +20,7 @@ const theme = createTheme({
 
 const MantineThemeProvider = ({ children }: ThemeProviderProps) => {
     return (
-        <MantineProvider forceColorScheme='dark' theme={theme}>
+        <MantineProvider forceColorScheme='light' theme={theme} defaultColorScheme='light'>
             {children}
         </MantineProvider>
     );

@@ -1,10 +1,11 @@
 "use client";
-import {dispatchSignUpState} from '@/utils/redux/store/actions/auth-action/auth-action';
+import { dispatchSignUpState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignUpFormHandlerType } from '@/utils/types/components-props';
 import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
 import { useForm } from "@mantine/form";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import toast, { Toaster } from "react-hot-toast"
 import { useDispatch } from 'react-redux';
 
@@ -28,12 +29,15 @@ const SignUpScreen = () => {
         },
     });
 
-
+    const navigate = useRouter();
     const dispatch = useDispatch<AppDispatch>();
 
     const signUpFromHanlder = (values: SendSignUpFormHandlerType): void => {
         toast("🤩 Your Form is submitting...");
-        dispatch(dispatchSignUpState(values));
+        dispatch(dispatchSignUpState(values)).finally(() => {
+            form.reset();
+            navigate.push("/");
+        });
     }
     return (
         <div className='min-h-dvh h-full w-full flex items-center justify-center flex-col gap-4'>
