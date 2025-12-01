@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button, Input, Avatar, Text, Paper, Group, Stack, Divider, ScrollArea } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
-import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconPhoto, IconVideo, IconHeart } from '@tabler/icons-react'
+import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconPhoto, IconVideo, IconHeart, IconList } from '@tabler/icons-react'
 
 const Home = () => {
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)')
@@ -21,13 +21,14 @@ const Home = () => {
             />
           </div>
         </div>
-        <nav className="flex items-center space-x-2 sm:space-x-6 overflow-x-auto">
+        <nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
           <Button variant="subtle" leftSection={<IconHome size={20} />} size="sm" className="shrink-0">Home</Button>
           <Button variant="subtle" leftSection={<IconUsers size={20} />} size="sm" className="shrink-0">Friends</Button>
           <Button variant="subtle" leftSection={<IconMessage size={20} />} size="sm" className="shrink-0">Messages</Button>
           <Button variant="subtle" leftSection={<IconBell size={20} />} size="sm" className="shrink-0">Notifications</Button>
           <Avatar size="md" className="shrink-0" />
         </nav>
+        <button className='flex lg:hidden'><IconList /></button>
       </header>
 
       <div className="flex">
@@ -68,41 +69,41 @@ const Home = () => {
             <div className='scroll-auto'>
               {isMobileOrTablet
                 ? Array.from({ length: Math.floor(Math.random() * 3) + 6 }, (_, i) => i + 1).map((post) => (
-                    <Paper key={post} p="md" withBorder>
-                      <Group mb="sm">
-                        <Avatar size="md" />
-                        <div>
-                          <Text fw={500}>User Name</Text>
-                          <Text size="sm" c="dimmed">2 hours ago</Text>
-                        </div>
-                      </Group>
-                      <Text mb="sm">This is a sample post content. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
-                      <div className="bg-gray-200 h-48 rounded mb-2"></div>
-                      <Group justify="space-between">
-                        <Button variant="subtle" size="sm">Like</Button>
-                        <Button variant="subtle" size="sm">Comment</Button>
-                        <Button variant="subtle" size="sm">Share</Button>
-                      </Group>
-                    </Paper>
-                  ))
+                  <Paper key={post} p="md" withBorder>
+                    <Group mb="sm">
+                      <Avatar size="md" />
+                      <div>
+                        <Text fw={500}>User Name</Text>
+                        <Text size="sm" c="dimmed">2 hours ago</Text>
+                      </div>
+                    </Group>
+                    <Text mb="sm">This is a sample post content. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
+                    <div className="bg-gray-200 h-48 rounded mb-2"></div>
+                    <Group justify="space-between">
+                      <Button variant="subtle" size="sm">Like</Button>
+                      <Button variant="subtle" size="sm">Comment</Button>
+                      <Button variant="subtle" size="sm">Share</Button>
+                    </Group>
+                  </Paper>
+                ))
                 : [1, 2, 3].map((post) => (
-                    <Paper key={post} p="md" withBorder>
-                      <Group mb="sm">
-                        <Avatar size="md" />
-                        <div>
-                          <Text fw={500}>User Name</Text>
-                          <Text size="sm" c="dimmed">2 hours ago</Text>
-                        </div>
-                      </Group>
-                      <Text mb="sm">This is a sample post content. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
-                      <div className="bg-gray-200 h-48 rounded mb-2"></div>
-                      <Group justify="space-between">
-                        <Button variant="subtle" size="sm">Like</Button>
-                        <Button variant="subtle" size="sm">Comment</Button>
-                        <Button variant="subtle" size="sm">Share</Button>
-                      </Group>
-                    </Paper>
-                  ))
+                  <Paper key={post} p="md" withBorder>
+                    <Group mb="sm">
+                      <Avatar size="md" />
+                      <div>
+                        <Text fw={500}>User Name</Text>
+                        <Text size="sm" c="dimmed">2 hours ago</Text>
+                      </div>
+                    </Group>
+                    <Text mb="sm">This is a sample post content. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
+                    <div className="bg-gray-200 h-48 rounded mb-2"></div>
+                    <Group justify="space-between">
+                      <Button variant="subtle" size="sm">Like</Button>
+                      <Button variant="subtle" size="sm">Comment</Button>
+                      <Button variant="subtle" size="sm">Share</Button>
+                    </Group>
+                  </Paper>
+                ))
               }
             </div>
 
