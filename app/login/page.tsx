@@ -2,7 +2,7 @@
 import { dispatchSignInState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignInFormHandlerType } from '@/utils/types/components-props';
-import { Button, Checkbox, Group, PasswordInput, Text, TextInput, Typography } from '@mantine/core'
+import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
 import { useForm } from "@mantine/form";
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
@@ -32,17 +32,12 @@ const LogInScreen = () => {
     }
 
     return (
-        <div className='min-h-dvh h-full w-full flex items-center justify-center flex-col gap-4'>
+        <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
             <Toaster />
-            <Typography><div
-                className='text-3xl my-5 text-sky-500 font-semibold'
-                dangerouslySetInnerHTML={{ __html: '<h1>Socialbook</h1>' }}
-            /></Typography>
-            <div className='min-h-[350px] w-[40vw] min-w-[300px] border border-slate-200 p-4 shadow rounded-sm'>
-                <Typography><div
-                    className='text-2xl my-5 text-slate-200 font-semibold'
-                    dangerouslySetInnerHTML={{ __html: 'Log in' }}
-                /></Typography>
+            <Stack className='min-h-[350px] bg-white w-[40vw] min-w-[300px] border border-slate-200 p-4 shadow rounded-sm'>
+                <Text size='xl' color='blue' fw={700}>
+                    Sign In
+                </Text>
                 <form className='my-5' onSubmit={form.onSubmit((values) => signInFromHanlder(values))}>
                     <TextInput
                         withAsterisk
@@ -73,7 +68,7 @@ const LogInScreen = () => {
                         </Text>
                     </Group>
                 </form>
-            </div>
+            </Stack>
         </div>
     )
 }

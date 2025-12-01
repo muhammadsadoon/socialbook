@@ -17,3 +17,19 @@ export type SendSignInFormHandlerType = {
     password: string;
     termsOfService: boolean;
 }
+
+export type DrawerComponentType = {
+    children:React.ReactNode;
+    isOpen:boolean;
+    close: ()=> void;
+}
+
+export type InfiniteScrollComponent = {
+    children: React.ReactNode;
+    functionality?: Function;
+}
+export type DashBoardLayoutType = {
+    children:React.ReactNode;
+    leftSection?:React.ReactNode;
+    rightSection?:React.ReactNode;
+}

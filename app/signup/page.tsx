@@ -40,17 +40,12 @@ const SignUpScreen = () => {
         });
     }
     return (
-        <div className='min-h-dvh h-full w-full flex items-center justify-center flex-col gap-4'>
+        <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
             <Toaster />
-            <Typography><div
-                className='text-3xl my-5 text-sky-500 font-semibold'
-                dangerouslySetInnerHTML={{ __html: '<h1>Socialbook</h1>' }}
-            /></Typography>
-            <div className='min-h-[350px] w-[40vw] min-w-[300px] border border-slate-200 p-4 shadow rounded-sm'>
-                <Typography><div
-                    className='text-2xl my-5 text-slate-200 font-semibold'
-                    dangerouslySetInnerHTML={{ __html: 'Sign up' }}
-                /></Typography>
+            <Stack className='bg-white min-h-[350px] w-[40vw] min-w-[300px] borde p-4 shadow rounded-sm'>
+                <Text size='xl' color='blue' fw={700}>
+                    Sign Up
+                </Text>
                 <form className='my-5' onSubmit={form.onSubmit((values) => signUpFromHanlder(values))}>
                     <TextInput
                         withAsterisk
@@ -97,7 +92,7 @@ const SignUpScreen = () => {
                         </Text>
                     </Group>
                 </form>
-            </div>
+            </Stack>
         </div>
     )
 }
