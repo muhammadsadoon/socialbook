@@ -11,9 +11,9 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+      <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <h1 className="text-2xl font-bold text-blue-600">SocialBook</h1>
           <div className="relative w-full sm:w-64">
@@ -34,7 +34,7 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
         <button className='flex lg:hidden' onClick={open}><IconList /></button>
       </header>
 
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
         {
           isMobileOrTablet ? (
@@ -53,7 +53,7 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
               </Stack>
             </DrawerToggle>
           ) : (
-            <aside className="w-64 bg-white p-4 border-r border-gray-200">
+            <aside className="w-64 bg-white p-4 border-r border-gray-200 shrink-0">
               <Stack>
                 <Group>
                   <Avatar size="md" />
@@ -72,17 +72,17 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
 
         {/* Main Content */}
         <main className="flex-1 p-4">
-          <div className="max-w-2xl mx-auto space-y-4">
+          <div className="max-w-2xl mx-auto space-y-4 h-full overflow-y-auto">
             {/* Posts */}
             {children}
 
-            
+
           </div>
         </main>
 
         {/* Right Sidebar */}
         {!isMobileOrTablet && (
-          <aside className="w-80 bg-white p-4 border-l border-gray-200">
+          <aside className="w-80 bg-white p-4 border-l border-gray-200 shrink-0">
             <Stack>
               <Text fw={500} mb="sm">Sponsored</Text>
               <Paper p="sm" withBorder mb="md">
