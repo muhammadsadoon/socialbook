@@ -1,17 +1,56 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Input, Avatar, Text, Paper, Group, Stack, Divider, ScrollArea } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconPhoto, IconVideo, IconHeart, IconList } from '@tabler/icons-react'
+import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin } from '@tabler/icons-react'
 import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import { app } from '@/utils/firebase'
+import toast, { Toaster } from 'react-hot-toast'
+import { deleteCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation'
 
-const DashBoardLayout = ({children}:DashBoardLayoutType) => {
+const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
+  const [isAuth, setIsAuth] = useState<boolean>(false);
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [opened, { open, close }] = useDisclosure(false);
 
+  // navigate hook
+
+  const router = useRouter();
+
+  // logout function defined here...
+  const logoutAuth = () => {
+    const auth = getAuth(app);
+    signOut(auth).then(() => {
+      toast("Logout is Done");
+      deleteCookie("token");
+      window.location.reload();
+    }).catch((error) => {
+      toast(`something went worng while logout! ${error}`);
+    });
+  }
+
+  const checkAuth = () => {
+    onAuthStateChanged(getAuth(app), async (user) => {
+      if (user) {
+        setIsAuth(true);
+      } else {
+        setIsAuth(false);
+        router.push("/login");
+      }
+    });
+  }
+
+
+  // onMount hook 
+  useEffect(() => {
+    checkAuth();
+  }, []);
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
+      <Toaster />
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
@@ -28,7 +67,15 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
           <Button variant="subtle" leftSection={<IconHome size={20} />} size="sm" className="shrink-0">Home</Button>
           <Button variant="subtle" leftSection={<IconUsers size={20} />} size="sm" className="shrink-0">Friends</Button>
           <Button variant="subtle" leftSection={<IconMessage size={20} />} size="sm" className="shrink-0">Messages</Button>
-          <Button variant="subtle" leftSection={<IconBell size={20} />} size="sm" className="shrink-0">Notifications</Button>
+          {
+            (!isAuth)
+              ?
+              (<Button variant="subtle" leftSection={<IconLogin size={20} />} size="sm" onClick={checkAuth} className="shrink-0">Login</Button>)
+              :
+              (<Button variant="subtle" leftSection={<IconLogout size={20} />} onClick={logoutAuth} size="sm" className="shrink-0">Logout</Button>)
+          }
+
+
           <Avatar size="md" className="shrink-0" />
         </nav>
         <button className='flex lg:hidden' onClick={open}><IconList /></button>
@@ -71,7 +118,7 @@ const DashBoardLayout = ({children}:DashBoardLayoutType) => {
         }
 
         {/* Main Content */}
-        <main className="flex-1 p-4">
+        <main className="flex-1 md:p-4">
           <div className="max-w-2xl mx-auto space-y-4 h-full overflow-y-auto">
             {/* Posts */}
             {children}
