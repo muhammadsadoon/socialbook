@@ -1,47 +1,70 @@
 import { SendSignInFormHandlerType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
 import { SET_AUTH_STATE } from "../../reducers/auth-reducer/auth-reducer";
-import { app, db } from "@/utils/firebase";
+import { app, auth, db } from "@/utils/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import { deleteCookie, setCookie } from "cookies-next";
 
 const dispatchSignInState = (payload: SendSignInFormHandlerType) => {
     return async (dispatch: Function) => {
         try {
             const auth = getAuth(app)
             const signInUser = await signInWithEmailAndPassword(auth, payload.email, payload.password);
-            dispatch({
-                type: SET_AUTH_STATE,
-                payload: { payload: payload, signInUser },
-            });
+            const cookie = await signInUser.user?.getIdToken();
+            setCookie("token",cookie);
+            dispatch(SET_AUTH_STATE(payload));
+            window.location.reload();
         } catch (err: any) {
             dispatch({
                 type: SET_AUTH_STATE,
                 payload: { ...payload, error: err },
             });
+            throw err.message;
         }
     };
 };
 const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
-    return async (dispatch: Function) => {
+    return async (dispatch: any) => {
         try {
-            const auth = getAuth(app)
+            const auth = getAuth(app);
             const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
-            const docRef = await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid });
-            dispatch({
-                type: SET_AUTH_STATE,
-                payload: payload,
-            });
+            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid });
+            const cookie = await createUser?.user?.getIdToken();
+            setCookie("token",cookie);
+            const dispatchUser = {
+                ...payload,
+                error: false,
+                errorMessage: "",
+            }
+            dispatch(SET_AUTH_STATE(dispatchUser));
+
         } catch (err: any) {
-            dispatch({
-                type: SET_AUTH_STATE,
-                payload: { ...payload, error: err },
-            });
+            const dispatchUser = {
+                ...payload,
+                error: false,
+                errorMassage: err?.message,
+            }
+            dispatch(SET_AUTH_STATE(dispatchUser));
         }
     };
 };
 
+const dispatchLogOutState = () => {
+    return async (dispatch: any) => {
+        console.log(dispatch)
+        signOut(auth).then(() => {
+            toast("Logout is Done");
+            deleteCookie("token");
+            window.location.reload();
+        }).catch((error) => {
+            toast(`something went worng while logout! ${error}`);
+        });
+    }
+}
 
 export {
     dispatchSignUpState,
-    dispatchSignInState
+    dispatchSignInState,
+    dispatchLogOutState
 };

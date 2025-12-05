@@ -1,9 +1,115 @@
-import React from 'react'
+"use client"
+import Image from 'next/image';
+import React, { useState } from 'react'
+import ReactImageFileToBase64 from "react-file-image-to-base64";
+import { Button, Stack, Text, TextInput, Group, Textarea, Avatar, Divider } from '@mantine/core'
+import { useForm } from "@mantine/form";
+import toast, { Toaster } from 'react-hot-toast';
+import { IconPhoto, IconTag } from '@tabler/icons-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '@/utils/redux/store/store';
+import { dispatchPostAction } from '@/utils/redux/store/actions/post-actions/post-actions';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/utils/firebase';
 
 const Page = () => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      title: '',
+      content: '',
+      image: null,
+    },
+    validate: {
+      title: (value) => (value.length > 0 ? null : 'Title is required'),
+      content: (value) => (value.length > 0 ? null : 'Content is required'),
+    },
+  });
+
+  // app dispatch function defined here...
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleOnCompleted = (files: any) => {
+    form.setFieldValue('image', files[0]?.base64_file);
+    setImagePreview(files[0].base64_file);
+  }
+
+
+  // handler dispatch post submitting 
+  const handleSubmit = (values: any) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(dispatchPostAction({...values,uid:user.uid})).catch((err) => {
+          toast("😵 something went worng..." + err);
+        }).finally(() => {
+          toast("🥳 Post created successfully!");
+          form.reset();
+          setImagePreview(null);
+        });
+      }
+    });
+  }
+
+
+  const handleCustumizedButton = () => {
+    return (
+      <Button variant="subtle" leftSection={<IconPhoto size={16} />} onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()}>
+        Photo/Video
+      </Button>
+    );
+  }
   return (
-    <div>
-      <h1>create post section</h1>
+    <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
+      <Toaster />
+      <Stack className='min-h-[400px] bg-white w-[50vw] min-w-[400px] border border-slate-200 p-4 shadow rounded-lg'>
+        <Group>
+          <Avatar size="md" />
+          <Text fw={500}>Your Name</Text>
+        </Group>
+        <Divider />
+        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+          <TextInput
+            withAsterisk
+            label="Title"
+            placeholder="What's on your mind?"
+            required
+            id="title"
+            key={form.key('title')}
+            {...form.getInputProps('title')}
+            className="mb-4"
+          />
+          <Textarea
+            label="Content"
+            placeholder="Share your thoughts..."
+            required
+            id="content"
+            key={form.key('content')}
+            {...form.getInputProps('content')}
+            className="mb-4"
+            minRows={3}
+          />
+          <div className="mb-4">
+            <Text size="sm" fw={500} mb="xs">Add to your post</Text>
+            <Group>
+              <ReactImageFileToBase64 onCompleted={handleOnCompleted} CustomisedButton={handleCustumizedButton} />
+              <Button variant="subtle" leftSection={<IconTag size={16} />}>
+                Tag
+              </Button>
+            </Group>
+          </div>
+          {imagePreview && (
+            <div className="mb-4">
+              <Text size="sm" fw={500} mb="xs">Image Preview</Text>
+              <Image src={imagePreview} height={100} width={100} alt="Preview" />
+            </div>
+          )}
+          <Group justify="flex-end" mt="md">
+            <Button type="submit" className='bg-blue-600 hover:bg-blue-700'>Post</Button>
+          </Group>
+        </form>
+      </Stack>
     </div>
   )
 }

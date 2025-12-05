@@ -1,5 +1,10 @@
 export default interface initialStateAuthReducer {
-    uid?:string,
-    email?:string,
-    token?:string
+    isAuthentication: null | {
+        email: string,
+        name?: string,
+        password: string,
+        error: boolean,
+        errorMessage: string | undefined,
+        token: string
+    }
 }

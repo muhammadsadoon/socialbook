@@ -30,19 +30,19 @@ const LogInScreen = () => {
 
     // dispatch functions defined here...
     const dispatch = useDispatch<AppDispatch>();
-
+    
     // Sign In Handler
     const signInFromHanlder = (values: SendSignInFormHandlerType): void => {
-        dispatch(dispatchSignInState(values)).finally(() => {
-            toast("🥳 Form is submitted");
-            form.reset();
-            onAuthStateChanged(getAuth(app), async (user) => {
-                if (user) {
-                    router.push('/');
-                } else {
+        var isTrue: Boolean = true;
+        dispatch(dispatchSignInState(values))
+            .catch((err) => { toast(`🤡 ${err}`); isTrue = false })
+            .finally(() => {
+                if(isTrue) {
+                    toast("🥳 Form is submitted");
+                    form.reset();
                 }
+                isTrue = true;
             });
-        });
     }
 
     return (
@@ -58,6 +58,7 @@ const LogInScreen = () => {
                         label="Email"
                         placeholder="your@email.com"
                         required
+                        id="email"
                         key={form.key('email')}
                         {...form.getInputProps('email')}
                     />
@@ -65,12 +66,14 @@ const LogInScreen = () => {
                         label="Password"
                         placeholder="type your own password"
                         required
+                        id="password"
                         key={form.key('password')}
                         {...form.getInputProps('password')}
                     />
                     <Checkbox
                         mt="md"
                         label="I agree to sell my privacy"
+                        id="termsOfService"
                         key={form.key('termsOfService')}
                         {...form.getInputProps('termsOfService', { type: 'checkbox' })}
                     />

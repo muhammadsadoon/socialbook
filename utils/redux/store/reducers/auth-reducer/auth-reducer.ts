@@ -2,9 +2,7 @@ import initialStateAuthReducer from "@/utils/types/redux-type";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: initialStateAuthReducer = {
-    uid: "",
-    email: "",
-    token: ""
+    isAuthentication: null
 }
 
 
@@ -13,11 +11,13 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         SET_AUTH_STATE: (state, action) => {
-            const { payload } = action;
-            state = payload;
+            state.isAuthentication = action.payload;
+        },
+        LOG_OUT_AUTH_STATE: (state) => {
+            state.isAuthentication = null;
         }
     }
 });
 
-export const { SET_AUTH_STATE } = authSlice.actions;
+export const { SET_AUTH_STATE, LOG_OUT_AUTH_STATE } = authSlice.actions;
 export default authSlice.reducer;

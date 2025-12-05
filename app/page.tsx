@@ -36,7 +36,7 @@ const page = () => {
   return (
     <div>
       <div className='scroll-auto'>
-        <Paper p="md" withBorder>
+        {/* <Paper p="md" withBorder>
           <Group>
             <Avatar size="md" />
             <Input placeholder="What's on your mind?" className="flex-1" />
@@ -47,7 +47,7 @@ const page = () => {
             <Button variant="subtle" leftSection={<IconPhoto size={20} />} color="green">Photo/video</Button>
             <Button variant="subtle" leftSection={<IconHeart size={20} />} color="orange">Feeling/activity</Button>
           </Group>
-        </Paper>
+        </Paper> */}
         {isMobileOrTablet
           ? Array.from({ length: Math.floor(Math.random() * 3) + 6 }, (_, i) => i + 1).map((post) => (
             <Paper key={post} p="md" withBorder>
