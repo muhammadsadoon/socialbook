@@ -37,12 +37,12 @@ const Page = () => {
   }
 
 
-  // handler dispatch post submitting 
+  // handler dispatch post submitting
   const handleSubmit = (values: any) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         dispatch(dispatchPostAction({...values,uid:user.uid})).catch((err) => {
-          toast("😵 something went worng..." + err);
+          toast("😵 something went wrong..." + JSON.stringify(err));
         }).finally(() => {
           toast("🥳 Post created successfully!");
           form.reset();
@@ -94,9 +94,7 @@ const Page = () => {
             <Text size="sm" fw={500} mb="xs">Add to your post</Text>
             <Group>
               <ReactImageFileToBase64 onCompleted={handleOnCompleted} CustomisedButton={handleCustumizedButton} />
-              <Button variant="subtle" leftSection={<IconTag size={16} />}>
-                Tag
-              </Button>
+              <Text size='sm'>While selecting an image, please make sure it is less than 500 KB.</Text>
             </Group>
           </div>
           {imagePreview && (

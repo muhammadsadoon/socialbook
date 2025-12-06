@@ -7,8 +7,6 @@ import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { app } from '@/utils/firebase'
-import toast, { Toaster } from 'react-hot-toast'
-import { deleteCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
@@ -48,7 +46,6 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   }, []);
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
-      <Toaster />
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
@@ -61,7 +58,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
             />
           </div>
         </div>
-        <nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
+        {isAuth && (<nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
           <Button variant="subtle" leftSection={<IconHome size={20} />} size="sm" className="shrink-0">Home</Button>
           <Button variant="subtle" leftSection={<IconUsers size={20} />} size="sm" className="shrink-0">Friends</Button>
           <Button variant="subtle" leftSection={<IconMessage size={20} />} size="sm" className="shrink-0">Messages</Button>
@@ -75,14 +72,15 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
 
 
           <Avatar size="md" className="shrink-0" />
-        </nav>
+        </nav>)}
         <button className='flex lg:hidden' onClick={open}><IconList /></button>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
         {
-          isMobileOrTablet ? (
+
+          isAuth && (isMobileOrTablet ? (
             <DrawerToggle close={close} isOpen={opened} >
               <Stack>
                 <Group>
@@ -115,7 +113,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <NavLink variant="subtle" component={Link} href={"#"} label={<Button variant="subtle" leftSection={<IconBell size={20} />} fullWidth justify="flex-start">Notifications</Button>} />
               </Stack>
             </aside>
-          )
+          ))
         }
 
         {/* Main Content */}
@@ -129,7 +127,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
         </main>
 
         {/* Right Sidebar */}
-        {!isMobileOrTablet && (
+        {!isMobileOrTablet && isAuth && (
           <aside className="w-80 bg-white p-4 border-l border-gray-200 shrink-0">
             <Stack>
               <Text fw={500} mb="sm">Sponsored</Text>

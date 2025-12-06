@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { publicRoutes, protectedRoutes } from "./utils/routes/routes";
 const middlewareResponse = async (req: NextRequest) => {
     const isToken = req?.cookies?.get("token")?.value;
-    console.log(isToken)
     // check pathname 
     const { pathname } = req?.nextUrl;
-    console.log(pathname)
     const isPrivateRoutes = protectedRoutes.includes(pathname);
     const isPublicRoutes = !isPrivateRoutes;
-    console.log("Private routes: ", isPrivateRoutes);
 
     if (!isToken && isPrivateRoutes) {
         console.log("redirecting to login page");

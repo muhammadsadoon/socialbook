@@ -31,5 +31,5 @@ const dispatchPostAction = (payload: any) => {
 }
 
 export {
-    dispatchPostAction
+    dispatchPostAction,
 }
