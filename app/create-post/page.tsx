@@ -11,10 +11,10 @@ import { AppDispatch } from '@/utils/redux/store/store';
 import { dispatchPostAction } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/utils/firebase';
-
+import { checkImageFileSize } from '@/utils/custom-functions';
 const Page = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  let temp: any = null;
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -32,23 +32,32 @@ const Page = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleOnCompleted = (files: any) => {
-    form.setFieldValue('image', files[0]?.base64_file);
-    setImagePreview(files[0].base64_file);
+    const imageSize = checkImageFileSize(files[0]?.base64_file);
+    if (imageSize < 125000) {
+      form.setFieldValue('image', files[0]?.base64_file);
+      setImagePreview(files[0].base64_file);
+    } else {
+      toast("😵 Your Image is to large please resubmitted image less then 500 kb")
+    }
+
   }
 
 
   // handler dispatch post submitting
   const handleSubmit = (values: any) => {
+    clearTimeout(temp);
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(dispatchPostAction({...values,uid:user.uid})).catch((err) => {
-          toast("😵 something went wrong..." + JSON.stringify(err));
-        }).finally(() => {
-          toast("🥳 Post created successfully!");
-          form.reset();
-          setImagePreview(null);
-        });
-      }
+    temp = setTimeout(() => {
+        if (user) {
+          dispatch(dispatchPostAction({ ...values, uid: user.uid })).catch((err) => {
+            toast("😵 something went wrong..." + JSON.stringify(err));
+          }).finally(() => {
+            toast("🥳 Post created successfully!");
+            form.reset();
+            setImagePreview(null);
+          });
+        }
+      }, 1000);
     });
   }
 

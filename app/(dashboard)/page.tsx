@@ -1,23 +1,25 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Input, Avatar, Text, Paper, Group, Stack, Divider, ScrollArea, NavLink } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin, IconPencilShare, IconHeartHandshake } from '@tabler/icons-react'
 import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
-import { app } from '@/utils/firebase'
+import { app, db } from '@/utils/firebase'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
 import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/auth-action'
 import Link from 'next/link'
+import { collection, getDocs } from 'firebase/firestore'
+import { SET_AUTH_STATE } from '@/utils/redux/store/reducers/auth-reducer/auth-reducer'
 
 const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [opened, { open, close }] = useDisclosure(false);
-
+  const [logedUser, setLogedUser] = useState<any>({});
   // navigate hook
 
   const router = useRouter();
@@ -29,10 +31,19 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
     dispatch(dispatchLogOutState());
   }
 
-  const checkAuth = () => {
+  const checkAuth = async () => {
     onAuthStateChanged(getAuth(app), async (user) => {
       if (user) {
+        console.log(user)
         setIsAuth(true);
+        const getUserFromFB = await getDocs(collection(db, "Users"));
+        getUserFromFB.forEach((item) => {
+          if (item.data().uid == user?.uid) {
+            setLogedUser(item.data());
+            dispatch(SET_AUTH_STATE(item.data()));
+          }
+        })
+
       } else {
         setIsAuth(false);
       }
@@ -49,7 +60,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
-          <h1 className="text-2xl font-bold text-blue-600">SocialBook</h1>
+          <h1 className="text-2xl font-bold text-blue-600">Social Book</h1>
           <div className="relative w-full sm:w-64">
             <Input
               placeholder="Search SocialBook"
@@ -85,7 +96,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
               <Stack>
                 <Group>
                   <Avatar size="md" />
-                  <Text fw={500}>Your Name</Text>
+                  <Text fw={500}>{logedUser?.payload?.name}</Text>
                 </Group>
                 <Divider />
                 <NavLink component={Link} href={"/"}>
@@ -103,7 +114,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
               <Stack>
                 <Group>
                   <Avatar size="md" />
-                  <Text fw={500}>Your Name</Text>
+                  <Text fw={500}>{logedUser?.payload?.name}</Text>
                 </Group>
                 <Divider />
                 <NavLink className='p-0' variant="subtle" component={Link} href={"/"} label={<Button variant="subtle" leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>} />

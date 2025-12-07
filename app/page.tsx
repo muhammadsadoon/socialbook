@@ -87,7 +87,7 @@ const page = () => {
                   </div>
                 </Group>
 
-                <Skeleton height={8} fw={500}></Skeleton>
+                <Skeleton height={8} fw={500} className='my-2'></Skeleton>
                 <Skeleton height={8} mb="sm"></Skeleton>
                 <Group justify="space-between">
                   <Button variant="subtle" size="sm">Like</Button>
