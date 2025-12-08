@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image';
-import React, { useState } from 'react'
+import React, { useState ,useEffect } from 'react'
 import ReactImageFileToBase64 from "react-file-image-to-base64";
 import { Button, Stack, Text, TextInput, Group, Textarea, Avatar, Divider } from '@mantine/core'
 import { useForm } from "@mantine/form";
@@ -61,6 +61,11 @@ const Page = () => {
     });
   }
 
+  // on component mounted
+
+  useEffect(()=>{
+    document.title = "Create the post | your mind";
+  },[]);
 
   const handleCustumizedButton = () => {
     return (
