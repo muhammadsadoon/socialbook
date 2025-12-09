@@ -65,6 +65,7 @@ const Page = () => {
 
   useEffect(()=>{
     document.title = "Create the post | your mind";
+    
   },[]);
 
   const handleCustumizedButton = () => {

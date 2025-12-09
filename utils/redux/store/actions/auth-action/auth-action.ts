@@ -14,12 +14,7 @@ const dispatchSignInState = (payload: SendSignInFormHandlerType) => {
             const cookie = await signInUser.user?.getIdToken();
             setCookie("token",cookie);
             dispatch(SET_AUTH_STATE(payload));
-            window.location.reload();
         } catch (err: any) {
-            dispatch({
-                type: SET_AUTH_STATE,
-                payload: { ...payload, error: err },
-            });
             throw err.message;
         }
     };
@@ -40,12 +35,7 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
             dispatch(SET_AUTH_STATE(dispatchUser));
 
         } catch (err: any) {
-            const dispatchUser = {
-                ...payload,
-                error: false,
-                errorMassage: err?.message,
-            }
-            dispatch(SET_AUTH_STATE(dispatchUser));
+           throw `Error: ${err}`;
         }
     };
 };

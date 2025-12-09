@@ -1,7 +1,7 @@
-import { auth, db } from "@/utils/firebase";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "@/utils/firebase";
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { SET_ALL_POST_BY_FB } from "../../reducers/post-reducer/post-reducer";
+
 
 
 const dispatchPostAction = (payload: any) => {
@@ -13,13 +13,16 @@ const dispatchPostAction = (payload: any) => {
             getUserInfo.forEach((doc: any) => {
                 data.push(doc.data());
             });
-            const getUserFilter = data?.find((e: any) => { return e?.uid ==  payload?.uid});
+            const getUserFilter = data?.find((e: any) => { return e?.uid == payload?.uid });
+            delete getUserFilter?.payload?.password;
             if (getUserFilter) {
                 const schemePost = {
                     ...payload,
+                    ...getUserFilter.payload,
                     comments: {},
-                    likes: false,
-                    userInfo: getUserFilter,
+                    likes: [],
+                    createdDate: new Date().getTime().toString(),
+                    uid: getUserFilter?.uid,
                 }
                 const docRef = await addDoc(collection(db, "posts"), schemePost);
                 console.log("Document written with ID: ", docRef.id);
@@ -30,6 +33,59 @@ const dispatchPostAction = (payload: any) => {
     }
 }
 
+const commetsSendHandler = () => {
+
+}
+
+
+// handle likes section in FB (database)
+const toggleLikeSendHandler = (payload: any) => {
+    return async () => {
+        console.log("payload: ", payload);
+        const docSnap: any = await getDocs(collection(db, "posts"));
+        let getDataFromSnap: any = {};
+
+        // get data from fireStore 
+        docSnap.forEach((data: any) => {
+            if ((data.data())?.uid == payload?.post?.uid) {
+                getDataFromSnap.data = data.data()
+                getDataFromSnap.docId = data.id
+            };
+        })
+        console.log(getDataFromSnap)
+
+        const docRef = doc(db, "posts", getDataFromSnap.docId);
+        if (getDataFromSnap?.data?.likes.includes(payload.userID)) {
+            getDataFromSnap?.data?.likes.splice(getDataFromSnap?.data?.likes?.indexOf(payload.userID), 1);
+            await updateDoc(docRef, {
+                likes: getDataFromSnap.data.likes
+            })
+            console.log("updated")
+        } else {
+            getDataFromSnap?.data?.likes.push(payload.userID);
+            await updateDoc(docRef, {
+                likes: getDataFromSnap.data.likes
+            })
+        }
+        window.location.reload()
+    }
+}
+
+const getAllPostFromFB = () => {
+    return async (dispatch: any) => {
+        try {
+            const data = await getDocs(collection(db, "posts"));
+            let temp: any[] = [];
+            data.forEach((item) => temp.push(item.data()));
+            dispatch(SET_ALL_POST_BY_FB(temp));
+        } catch (err) {
+            throw `Something went worng while fetching data ${err}`;
+        }
+    }
+}
 export {
     dispatchPostAction,
+    commetsSendHandler,
+    toggleLikeSendHandler,
+    getAllPostFromFB
 }

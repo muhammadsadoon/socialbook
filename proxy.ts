@@ -4,7 +4,7 @@ const middlewareResponse = async (req: NextRequest) => {
     const isToken = req?.cookies?.get("token")?.value;
     // check pathname 
     const { pathname } = req?.nextUrl;
-    const isPrivateRoutes = protectedRoutes.includes(pathname);
+    const isPrivateRoutes = protectedRoutes.some((item) => item.startsWith(pathname));
     const isPublicRoutes = !isPrivateRoutes;
 
     if (!isToken && isPrivateRoutes) {

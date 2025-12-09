@@ -1,31 +1,39 @@
 "use client"
 import FriendSugComponent from '@/components/friend-sug/friend-sug';
-import { db } from '@/utils/firebase';
+import { auth } from '@/utils/firebase';
+import { getAllPostFromFB, toggleLikeSendHandler } from '@/utils/redux/store/actions/post-actions/post-actions';
+import { AppDispatch } from '@/utils/redux/store/store';
 import { Avatar, Button, Divider, Group, Input, Paper, Skeleton, Stack, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks';
-import { IconHeart, IconPhoto, IconVideo } from '@tabler/icons-react';
-import { collection, getDocs } from 'firebase/firestore';
+import { IconHeart, IconHeartFilled, IconPhoto, IconVideo } from '@tabler/icons-react';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const page = () => {
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [posts, setPosts] = useState<any[]>([]);
+  const [getAuthIDFromFB, setGetAuthIDFromFB] = useState<string>("");
 
-  const getAllPostFromFB = async () => {
-    const data = await getDocs(collection(db, "posts"));
-    let temp: any[] = [];
-    data.forEach((item) => temp.push(item.data()));
-    setPosts(temp);
+  // handle dispatch function defined here...
+  const getPosts: any = useSelector((data: any) => data?.postStates);
+  const dispatch = useDispatch<AppDispatch>();
+
+  console.log(getPosts.posts);
+  const commitSectionHandler = () => {
+
   }
-
+  const handlerLikeBTN = (post: any) => {
+    dispatch(toggleLikeSendHandler({ post, userID: getAuthIDFromFB }));
+  }
   const AddPost = () => {
     return posts.map((post: any, i) => (
       <Paper key={i} p="md" withBorder>
         <Group mb="sm">
           <Avatar size="md" />
           <div>
-            <Text fw={500}>{post?.userInfo?.payload?.name}</Text>
+            <Text fw={500}>{post?.name}</Text>
             <Text size="sm" c="dimmed">2 hours ago</Text>
           </div>
         </Group>
@@ -45,19 +53,30 @@ const page = () => {
         )}
 
         <Group justify="space-between">
-          <Button variant="subtle" size="sm">Like</Button>
+          <Button
+            variant="subtle"
+            size="sm"
+            leftSection={post?.likes?.some((user: any) => user === getAuthIDFromFB) ? <IconHeartFilled /> : <IconHeart />}
+            onClick={() => handlerLikeBTN(post)}
+          >
+            Like
+          </Button>
           <Button variant="subtle" size="sm">Comment</Button>
           <Button variant="subtle" size="sm">Share</Button>
         </Group>
+        <Text size='sm'>Likes : {post.likes?.length || 0}</Text>
       </Paper>
-    ));
+    )).reverse();
   };
 
 
 
 
   useEffect(() => {
-    getAllPostFromFB();
+    onAuthStateChanged(auth, (user: any) => {
+      setGetAuthIDFromFB(user?.uid);
+    })
+    dispatch(getAllPostFromFB()).then(() => setPosts(() => getPosts?.posts));
   }, [])
   return (
     <div>
@@ -76,27 +95,31 @@ const page = () => {
         </Paper> */}
 
         {
-          (posts.length > 1) ? <AddPost /> : (
-            <>
-              <Paper p="md" withBorder>
-                <Group mb="sm">
-                  <Avatar size="md" />
-                  <div>
-                    <Skeleton height={50} fw={500}/>
-                    <Text size="sm" c="dimmed">2 hours ago</Text>
-                  </div>
-                </Group>
+          (posts)
+            ?
+            <AddPost />
+            :
+            (
+              <>
+                <Paper p="md" withBorder>
+                  <Group mb="sm">
+                    <Avatar size="md" />
+                    <div>
+                      <Skeleton height={50} fw={500} />
+                      <Text size="sm" c="dimmed">2 hours ago</Text>
+                    </div>
+                  </Group>
 
-                <Skeleton height={8} fw={500} className='my-2'></Skeleton>
-                <Skeleton height={8} mb="sm"></Skeleton>
-                <Group justify="space-between">
-                  <Button variant="subtle" size="sm">Like</Button>
-                  <Button variant="subtle" size="sm">Comment</Button>
-                  <Button variant="subtle" size="sm">Share</Button>
-                </Group>
-              </Paper>
-            </>
-          )
+                  <Skeleton height={8} fw={500} className='my-2'></Skeleton>
+                  <Skeleton height={8} mb="sm"></Skeleton>
+                  <Group justify="space-between">
+                    <Button variant="subtle" size="sm">Like</Button>
+                    <Button variant="subtle" size="sm">Comment</Button>
+                    <Button variant="subtle" size="sm">Share</Button>
+                  </Group>
+                </Paper>
+              </>
+            )
         }
         {/* Friend Requests - Only on mobile and tablet */}
         {/* {isMobileOrTablet && (
