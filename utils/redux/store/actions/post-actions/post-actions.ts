@@ -52,7 +52,6 @@ const toggleLikeSendHandler = (payload: any) => {
                 getDataFromSnap.docId = data.id
             };
         })
-        console.log(getDataFromSnap)
 
         const docRef = doc(db, "posts", getDataFromSnap.docId);
         if (getDataFromSnap?.data?.likes.includes(payload.userID)) {
@@ -60,14 +59,12 @@ const toggleLikeSendHandler = (payload: any) => {
             await updateDoc(docRef, {
                 likes: getDataFromSnap.data.likes
             })
-            console.log("updated")
         } else {
             getDataFromSnap?.data?.likes.push(payload.userID);
             await updateDoc(docRef, {
                 likes: getDataFromSnap.data.likes
             })
         }
-        window.location.reload()
     }
 }
 

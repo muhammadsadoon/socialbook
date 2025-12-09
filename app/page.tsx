@@ -1,5 +1,6 @@
 "use client"
 import FriendSugComponent from '@/components/friend-sug/friend-sug';
+import { calculateTimeDuration } from '@/utils/custum-code/custum-code';
 import { auth } from '@/utils/firebase';
 import { getAllPostFromFB, toggleLikeSendHandler } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { AppDispatch } from '@/utils/redux/store/store';
@@ -13,28 +14,27 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const page = () => {
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
-  const [posts, setPosts] = useState<any[]>([]);
   const [getAuthIDFromFB, setGetAuthIDFromFB] = useState<string>("");
 
   // handle dispatch function defined here...
   const getPosts: any = useSelector((data: any) => data?.postStates);
   const dispatch = useDispatch<AppDispatch>();
-
-  console.log(getPosts.posts);
   const commitSectionHandler = () => {
 
   }
   const handlerLikeBTN = (post: any) => {
     dispatch(toggleLikeSendHandler({ post, userID: getAuthIDFromFB }));
+    dispatch(getAllPostFromFB())
   }
   const AddPost = () => {
-    return posts.map((post: any, i) => (
+
+    return getPosts.posts.map((post: any, i: number) => (
       <Paper key={i} p="md" withBorder>
         <Group mb="sm">
           <Avatar size="md" />
           <div>
             <Text fw={500}>{post?.name}</Text>
-            <Text size="sm" c="dimmed">2 hours ago</Text>
+            <Text size="sm" c="dimmed">{calculateTimeDuration(Number(post.createdDate))}</Text>
           </div>
         </Group>
 
@@ -76,7 +76,7 @@ const page = () => {
     onAuthStateChanged(auth, (user: any) => {
       setGetAuthIDFromFB(user?.uid);
     })
-    dispatch(getAllPostFromFB()).then(() => setPosts(() => getPosts?.posts));
+    dispatch(getAllPostFromFB());
   }, [])
   return (
     <div>
@@ -95,7 +95,7 @@ const page = () => {
         </Paper> */}
 
         {
-          (posts)
+          (getPosts?.posts?.length > 0)
             ?
             <AddPost />
             :
@@ -105,17 +105,17 @@ const page = () => {
                   <Group mb="sm">
                     <Avatar size="md" />
                     <div>
-                      <Skeleton height={50} fw={500} />
-                      <Text size="sm" c="dimmed">2 hours ago</Text>
+                      <Skeleton height={20} width={100} className='my-2' fw={500} />
+                      <Skeleton height={10} width={20} fw={500} />
                     </div>
                   </Group>
 
                   <Skeleton height={8} fw={500} className='my-2'></Skeleton>
                   <Skeleton height={8} mb="sm"></Skeleton>
                   <Group justify="space-between">
-                    <Button variant="subtle" size="sm">Like</Button>
-                    <Button variant="subtle" size="sm">Comment</Button>
-                    <Button variant="subtle" size="sm">Share</Button>
+                    <Skeleton height={8} width={20} mb="sm"></Skeleton>
+                    <Skeleton height={8} width={20} mb="sm"></Skeleton>
+                    <Skeleton height={8} width={20} mb="sm"></Skeleton>
                   </Group>
                 </Paper>
               </>

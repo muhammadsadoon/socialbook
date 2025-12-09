@@ -2,12 +2,12 @@
 import { useEffect, useState } from 'react'
 import { Button, Input, Avatar, Text, Paper, Group, Stack, Divider, ScrollArea, NavLink } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin, IconPencilShare, IconHeartHandshake } from '@tabler/icons-react'
+import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin, IconPencilShare, IconHeartHandshake, IconFriends, IconMessageCog } from '@tabler/icons-react'
 import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { app, db } from '@/utils/firebase'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
 import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/auth-action'
@@ -23,7 +23,6 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   // navigate hook
 
   const router = useRouter();
-
   const dispatch = useDispatch<AppDispatch>()
 
   // logout function defined here...
@@ -49,7 +48,6 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
       }
     });
   }
-
 
   // onMount hook 
   useEffect(() => {
@@ -99,14 +97,12 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                   <Text fw={500}>{logedUser?.payload?.name}</Text>
                 </Group>
                 <Divider />
-                <NavLink component={Link} href={"/"}>
-                  <Button variant="subtle" leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>
-                </NavLink>
+                <Button component={Link} href={"/"} variant={window.location.pathname == "/" ? "subtle" : ""} leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>
+                <Button component={Link} href={"/create-post"} variant="subtle" leftSection={<IconPlus size={20} />} fullWidth justify="flex-start">Create post</Button>
+                <Button component={Link} href={"#"} variant="subtle" leftSection={<IconFriends size={20} />} fullWidth justify="flex-start">Friend</Button>
+                <Button component={Link} href={"#"} variant="subtle" leftSection={<IconMessage size={20} />} fullWidth justify="flex-start">Message</Button>
+                <Button variant="subtle" leftSection={<IconHome size={20} />} onClick={logoutAuth} fullWidth justify="flex-start">Logout</Button>
 
-                <Button variant="subtle" leftSection={<IconUsers size={20} />} fullWidth justify="flex-start">Friends</Button>
-                <Button variant="subtle" leftSection={<IconMessage size={20} />} fullWidth justify="flex-start">Messages</Button>
-                <Button variant="subtle" leftSection={<IconBell size={20} />} fullWidth justify="flex-start">Notifications</Button>
-                <Button variant="subtle" leftSection={<IconPlus size={20} />} fullWidth justify="flex-start">Create</Button>
               </Stack>
             </DrawerToggle>
           ) : (
@@ -117,11 +113,11 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                   <Text fw={500}>{logedUser?.payload?.name}</Text>
                 </Group>
                 <Divider />
-                <NavLink className='p-0' variant="subtle" component={Link} href={"/"} label={<Button variant="subtle" leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>} />
-                <NavLink variant="subtle" component={Link} href={"/create-post"} label={<Button variant="subtle" leftSection={<IconPencilShare size={20} />} fullWidth justify="flex-start">Create Post</Button>} />
-                <NavLink variant="subtle" component={Link} href={"#"} label={<Button variant="subtle" leftSection={<IconHeartHandshake size={20} />} fullWidth justify="flex-start">Friends</Button>} />
-                <NavLink variant="subtle" component={Link} href={"#"} label={<Button variant="subtle" leftSection={<IconMessage size={20} />} fullWidth justify="flex-start">Messages</Button>} />
-                <NavLink variant="subtle" component={Link} href={"#"} label={<Button variant="subtle" leftSection={<IconBell size={20} />} fullWidth justify="flex-start">Notifications</Button>} />
+                <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
+                <NavLink variant="subtle" component={Link} href={"/create-post"} leftSection={<IconPencilShare size={20} />} label="Create Post" />
+                <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconHeartHandshake size={20} />} label="Friends" />
+                <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconMessage size={20} />} label="Messages" />
+                <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconBell size={20} />} label="Notifications" />
               </Stack>
             </aside>
           ))
