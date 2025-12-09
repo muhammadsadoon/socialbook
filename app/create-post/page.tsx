@@ -5,8 +5,8 @@ import ReactImageFileToBase64 from "react-file-image-to-base64";
 import { Button, Stack, Text, TextInput, Group, Textarea, Avatar, Divider } from '@mantine/core'
 import { useForm } from "@mantine/form";
 import toast, { Toaster } from 'react-hot-toast';
-import { IconPhoto, IconTag } from '@tabler/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
+import { IconPhoto } from '@tabler/icons-react';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { dispatchPostAction } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { onAuthStateChanged } from 'firebase/auth';

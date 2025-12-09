@@ -9,10 +9,6 @@ import DashBoardLayout from "./(dashboard)/page";
 // ‼️ import carousel styles after core package styles
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
-import { useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "@/utils/firebase";
-import { setCookie } from "cookies-next";
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   

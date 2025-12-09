@@ -1,11 +1,9 @@
 "use client";
-import { app } from '@/utils/firebase';
 import { dispatchSignInState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignInFormHandlerType } from '@/utils/types/components-props';
 import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
 import { useForm } from "@mantine/form";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';

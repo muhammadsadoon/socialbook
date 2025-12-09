@@ -1,11 +1,11 @@
 "use client"
-import FriendSugComponent from '@/components/friend-sug/friend-sug';
+// import FriendSugComponent from '@/components/friend-sug/friend-sug';
 import { calculateTimeDuration } from '@/utils/custum-code/custum-code';
 import { auth } from '@/utils/firebase';
 import { getAllPostFromFB, toggleLikeSendHandler } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { AppDispatch } from '@/utils/redux/store/store';
-import { Avatar, Button, Divider, Group, Input, Paper, Skeleton, Stack, Text } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks';
+import { Avatar, Button, Group, Paper, Skeleton, Text } from '@mantine/core'
+// import { useMediaQuery } from '@mantine/hooks';
 import { IconHeart, IconHeartFilled, IconPhoto, IconVideo } from '@tabler/icons-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -13,15 +13,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 const page = () => {
-  const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
+  // const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [getAuthIDFromFB, setGetAuthIDFromFB] = useState<string>("");
 
   // handle dispatch function defined here...
   const getPosts: any = useSelector((data: any) => data?.postStates);
   const dispatch = useDispatch<AppDispatch>();
-  const commitSectionHandler = () => {
+  // const commitSectionHandler = () => {
 
-  }
+  // }
   const handlerLikeBTN = (post: any) => {
     dispatch(toggleLikeSendHandler({ post, userID: getAuthIDFromFB }));
     dispatch(getAllPostFromFB())

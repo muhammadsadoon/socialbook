@@ -2,7 +2,7 @@
 import { dispatchSignUpState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignUpFormHandlerType } from '@/utils/types/components-props';
-import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
+import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput } from '@mantine/core'
 import { useForm } from "@mantine/form";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
