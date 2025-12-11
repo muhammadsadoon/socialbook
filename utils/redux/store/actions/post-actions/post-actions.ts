@@ -33,8 +33,36 @@ const dispatchPostAction = (payload: any) => {
     }
 }
 
-const commetsSendHandler = () => {
+const commetsSendHandler = (payload: any) => {
+    return async () => {
+        try {
+            const docSnap: any = await getDocs(collection(db, "posts"));
+            let getDataFromSnap: any = {};
 
+            // get data from fireStore
+            docSnap.forEach((data: any) => {
+                if ((data.data())?.uid == payload?.post?.uid) {
+                    getDataFromSnap.data = data.data()
+                    getDataFromSnap.docId = data.id
+                };
+            })
+
+            const docRef = doc(db, "posts", getDataFromSnap.docId);
+            const currentComments = getDataFromSnap?.data?.comments || {};
+            const newCommentKey = `comment_${Date.now()}`;
+            currentComments[newCommentKey] = {
+                text: payload.comment,
+                userID: payload.userID,
+                timestamp: new Date().getTime().toString()
+            };
+
+            await updateDoc(docRef, {
+                comments: currentComments
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 

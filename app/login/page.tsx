@@ -38,6 +38,7 @@ const LogInScreen = () => {
                 if(isTrue) {
                     toast("🥳 Form is submitted");
                     form.reset();
+                    router.push("/");
                 }
                 isTrue = true;
             });
