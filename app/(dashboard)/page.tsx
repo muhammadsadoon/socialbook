@@ -7,7 +7,7 @@ import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { app, db } from '@/utils/firebase'
-import {  useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
 import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/auth-action'
@@ -110,6 +110,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
               <Stack>
                 <Group>
                   <Avatar size="md" />
+                  
                   <Text fw={500}>{logedUser?.payload?.name}</Text>
                 </Group>
                 <Divider />

@@ -19,7 +19,7 @@ const dispatchPostAction = (payload: any) => {
                 const schemePost = {
                     ...payload,
                     ...getUserFilter.payload,
-                    comments: {},
+                    comments: [],
                     likes: [],
                     createdDate: new Date().getTime().toString(),
                     uid: getUserFilter?.uid,
@@ -36,31 +36,47 @@ const dispatchPostAction = (payload: any) => {
 const commetsSendHandler = (payload: any) => {
     return async () => {
         try {
-            const docSnap: any = await getDocs(collection(db, "posts"));
-            let getDataFromSnap: any = {};
+            if ((payload?.comment).trim()) {
+                const docSnap: any = await getDocs(collection(db, "posts"));
+                let getDataFromSnap: any = {};
 
-            // get data from fireStore
-            docSnap.forEach((data: any) => {
-                if ((data.data())?.uid == payload?.post?.uid) {
-                    getDataFromSnap.data = data.data()
-                    getDataFromSnap.docId = data.id
+                // get data from fireStore
+                docSnap.forEach((data: any) => {
+                    if (data.data()?.createdDate == payload?.post?.createdDate) {
+                        getDataFromSnap.docId = data.id;
+                        getDataFromSnap.data = data.data();
+                    }
+                });
+
+                console.log(payload);
+
+                const docRef = doc(db, "posts", getDataFromSnap.docId);
+
+                // Always ensure comments is an array
+                const currentComments = (getDataFromSnap?.data?.comments)
+                    ? [...getDataFromSnap.data.comments]
+                    : [];
+
+                // Unique key
+                const newCommentKey = `comment_${Date.now()}`;
+
+                const newComment = {
+                    id: newCommentKey,
+                    text: payload.comment ?? "",
+                    userID: payload?.post?.uid ?? "",
+                    timestamp: Date.now(),
+                    userName: payload?.post?.name ?? "",
                 };
-            })
 
-            const docRef = doc(db, "posts", getDataFromSnap.docId);
-            const currentComments = getDataFromSnap?.data?.comments || {};
-            const newCommentKey = `comment_${Date.now()}`;
-            currentComments[newCommentKey] = {
-                text: payload.comment,
-                userID: payload.userID,
-                timestamp: new Date().getTime().toString()
-            };
+                currentComments.push(newComment);
 
-            await updateDoc(docRef, {
-                comments: currentComments
-            });
+                await updateDoc(docRef, {
+                    comments: currentComments
+                });
+            } else throw "plase fill the input first";
+
         } catch (err) {
-            console.log(err);
+            throw err
         }
     }
 }
@@ -76,8 +92,8 @@ const toggleLikeSendHandler = (payload: any) => {
         // get data from fireStore 
         docSnap.forEach((data: any) => {
             if ((data.data())?.uid == payload?.post?.uid) {
-                getDataFromSnap.data = data.data()
-                getDataFromSnap.docId = data.id
+                getDataFromSnap.data = data.data();
+                getDataFromSnap.docId = data.id;
             };
         })
 

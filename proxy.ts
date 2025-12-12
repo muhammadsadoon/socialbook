@@ -1,23 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
-import { publicRoutes, protectedRoutes } from "./utils/routes/routes";
-const middlewareResponse = async (req: NextRequest) => {
-    const isToken = req?.cookies?.get("token")?.value;
-    // check pathname 
-    const { pathname } = req?.nextUrl;
-    const isPrivateRoutes = protectedRoutes.some((item) => item.startsWith(pathname));
-    const isPublicRoutes = !isPrivateRoutes;
+import { protectedRoutes, publicRoutes } from "./utils/routes/routes";
+import { matchRoute } from "./utils/routes/matchRoute";
 
-    if (!isToken && isPrivateRoutes) {
-        console.log("redirecting to login page");
+const middlewareResponse = async (req: NextRequest) => {
+    const token = req.cookies.get("token")?.value;
+    const { pathname } = req.nextUrl;
+
+    // check protectedRoute hit? (supports dynamic)
+    const isProtected = protectedRoutes.some((route:any) => matchRoute(route, pathname));
+
+    // check publicRoute hit?
+    const isPublic = publicRoutes.some((route:any) => matchRoute(route, pathname));
+
+
+    // Unauthorized user trying protected route
+    if (!token && isProtected) {
+        console.log("redirect → login");
         return NextResponse.redirect(new URL("/login", req.url));
-    };
-    if (isToken && isPublicRoutes) {
-        console.log("redirecting to main home page");
+    }
+
+    // Logged-in user trying public route (login/signup)
+    if (token && isPublic) {
+        console.log("redirect → home page");
         return NextResponse.redirect(new URL("/", req.url));
-    };
-    // sif (!(isPrivateRoutes && !isPublicRoutes) || !(!isPrivateRoutes && isPublicRoutes)) return NextResponse.redirect(new URL("/not-found", req.url));
+    }
+
     return NextResponse.next();
-}
+};
 
 export default middlewareResponse;
 

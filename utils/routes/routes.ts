@@ -1,12 +1,16 @@
-export const protectedRoutes: String[] = [
+export const protectedRoutes: string[] = [
     "/",
     "/dashboard",
     "/create-post",
-    "/user-profile/",
     "/profile",
-    "/user-profile/commits/"
-]
-export const publicRoutes: String[] = [
+
+    // dynamic routes
+    "/user-profile/:id",
+    "/post/:postId",
+    "/post/:postId/comments",
+];
+
+export const publicRoutes: string[] = [
     "/login",
     "/signup",
-]
+];
