@@ -5,7 +5,7 @@ export const protectedRoutes: string[] = [
     "/profile",
 
     // dynamic routes
-    "/user-profile/:id",
+    "/user/:id",
     "/post/:postId",
     "/post/:postId/comments",
 ];

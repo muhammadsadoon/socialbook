@@ -48,7 +48,6 @@ const commetsSendHandler = (payload: any) => {
                     }
                 });
 
-                console.log(payload);
 
                 const docRef = doc(db, "posts", getDataFromSnap.docId);
 
@@ -65,7 +64,7 @@ const commetsSendHandler = (payload: any) => {
                     text: payload.comment ?? "",
                     userID: payload?.post?.uid ?? "",
                     timestamp: Date.now(),
-                    userName: payload?.post?.name ?? "",
+                    userName: payload?.commentSender?.payload?.name ?? "",
                 };
 
                 currentComments.push(newComment);
@@ -117,7 +116,9 @@ const getAllPostFromFB = () => {
         try {
             const data = await getDocs(collection(db, "posts"));
             let temp: any[] = [];
-            data.forEach((item) => temp.push(item.data()));
+            data.forEach((item) => {
+                temp.push({data:item.data(),docID:item.id})
+            });
             dispatch(SET_ALL_POST_BY_FB(temp));
         } catch (err) {
             throw `Something went worng while fetching data ${err}`;

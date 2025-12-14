@@ -12,7 +12,7 @@ const dispatchSignInState = (payload: SendSignInFormHandlerType) => {
             const auth = getAuth(app)
             const signInUser = await signInWithEmailAndPassword(auth, payload.email, payload.password);
             const cookie = await signInUser.user?.getIdToken();
-            setCookie("token",cookie);
+            setCookie("token", cookie);
             dispatch(SET_AUTH_STATE(payload));
         } catch (err: any) {
             throw err.message;
@@ -24,9 +24,9 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
         try {
             const auth = getAuth(app);
             const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
-            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid });
+            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid, requests: [] });
             const cookie = await createUser?.user?.getIdToken();
-            setCookie("token",cookie);
+            setCookie("token", cookie);
             const dispatchUser = {
                 ...payload,
                 error: false,
@@ -35,7 +35,7 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
             dispatch(SET_AUTH_STATE(dispatchUser));
 
         } catch (err: any) {
-           throw `Error: ${err}`;
+            throw `Error: ${err}`;
         }
     };
 };

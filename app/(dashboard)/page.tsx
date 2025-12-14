@@ -68,9 +68,6 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
           </div>
         </div>
         {isAuth && (<nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
-          <Button variant="subtle" leftSection={<IconHome size={20} />} size="sm" className="shrink-0">Home</Button>
-          <Button variant="subtle" leftSection={<IconUsers size={20} />} size="sm" className="shrink-0">Friends</Button>
-          <Button variant="subtle" leftSection={<IconMessage size={20} />} size="sm" className="shrink-0">Messages</Button>
           {
             (!isAuth)
               ?
@@ -110,8 +107,10 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
               <Stack>
                 <Group>
                   <Avatar size="md" />
-                  
-                  <Text fw={500}>{logedUser?.payload?.name}</Text>
+
+                  <Text fw={500}>
+                    {logedUser?.payload?.name}
+                  </Text>
                 </Group>
                 <Divider />
                 <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
@@ -126,7 +125,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
 
         {/* Main Content */}
         <main className="flex-1 md:p-4">
-          <div className="max-w-2xl mx-auto space-y-4 h-full overflow-y-auto">
+          <div className="max-w-4xl mx-auto space-y-4 h-full overflow-y-auto">
             {/* Posts */}
             {children}
 
@@ -135,7 +134,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
         </main>
 
         {/* Right Sidebar */}
-        {!isMobileOrTablet && isAuth && (
+        {/* {!isMobileOrTablet && isAuth && (
           <aside className="w-80 bg-white p-4 border-l border-gray-200 shrink-0">
             <Stack>
               <Text fw={500} mb="sm">Sponsored</Text>
@@ -157,7 +156,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
               </ScrollArea>
             </Stack>
           </aside>
-        )}
+        )} */}
       </div>
     </div>
   )

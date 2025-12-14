@@ -7,8 +7,9 @@ import { AppDispatch } from '@/utils/redux/store/store';
 import { Avatar, Button, Divider, Group, Paper, Skeleton, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { onAuthStateChanged } from 'firebase/auth';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -23,7 +24,8 @@ const Page = () => {
   const [getAuthIDFromFB, setGetAuthIDFromFB] = useState<string>("");
   const [commentValues, setCommentValues] = useState<any>({});
   const [loading, setLoading] = useState(false);
-  const getPosts: any = useSelector((data: any) => data?.postStates);
+  const getPosts: any = useSelector((data: any) => data?.postStates.posts);
+  const getAuthStateFromFB = useSelector((data: any) => data.authStates?.isAuthentication);
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -31,8 +33,7 @@ const Page = () => {
   const commitSectionHandler = (post: any) => {
     setLoading(true)
     const key = getPostKey(post);
-    console.log("Comment for Post:", key, "=>", commentValues[key]);
-    dispatch(commetsSendHandler({ post, comment: commentValues[key] }))
+    dispatch(commetsSendHandler({ post, comment: commentValues[key], commentSender: getAuthStateFromFB }))
       .catch((e) => { toast("some thing went wonrg..." + e) })
       .finally(() => {
         toast("Your Comment was add");
@@ -63,44 +64,41 @@ const Page = () => {
   return (
     <div>
       <div className="scroll-auto">
-        {getPosts?.posts?.length > 0 ? (
+        <Toaster />
+        {getPosts?.length > 0 ? (
           // ❌ No Component — Direct Map → No Input Blur
-          [...getPosts.posts].reverse().map((post: any, i: number) => {
-
+          [...getPosts].reverse().map((post: any, i: number) => {
             const key = getPostKey(post);
-
             return (
               <Paper key={i} p="md" withBorder className="mb-4">
-
-                <Group mb="sm">
-                  <Avatar size="md" />
-                  <div>
-                    <Text fw={500}>{post?.name}</Text>
-                    <Text size="sm" c="dimmed">
-                      {calculateTimeDuration(Number(post.createdDate))}
-                    </Text>
-                  </div>
-                </Group>
-
+                <Link href={`/user/${(post?.data?.name).split(" ").join("-")}`}>
+                  <Group mb="sm">
+                    <Avatar size="md" />
+                    <div>
+                      <Text fw={500}>{post?.data?.name}</Text>
+                      <Text size="sm" c="dimmed">
+                        {calculateTimeDuration(Number(post?.data?.createdDate))}
+                      </Text>
+                    </div>
+                  </Group>
+                </Link>
                 <Text fw={500}>{post?.title}</Text>
-                <Text mb="sm" className='line-clamp-2'>{post?.content}</Text>
-
-                {post?.image && (
+                <Text mb="sm" className='line-clamp-2'>{post?.data?.content}</Text>
+                {post?.data?.image && (
                   <div className="h-48 rounded mb-2">
                     <img
-                      src={post.image}
+                      src={post.data?.image}
                       className="w-full h-full object-cover rounded"
                       alt="post-image"
                     />
                   </div>
                 )}
-
                 <Group justify="space-between">
                   <Button
                     variant="subtle"
                     size="sm"
                     leftSection={
-                      post?.likes?.some((user: any) => user === getAuthIDFromFB)
+                      post?.data?.likes?.some((user: any) => user === getAuthIDFromFB)
                         ? <IconHeartFilled />
                         : <IconHeart />
                     }
@@ -108,15 +106,13 @@ const Page = () => {
                   >
                     Like
                   </Button>
-
-                  <Button variant="subtle" size="sm">Comment</Button>
-                  <Button variant="subtle" size="sm">Share</Button>
+                  <Button variant="subtle" size="sm">See More Comments</Button>
                 </Group>
                 <Text fw={600}>
                   Comments
                 </Text>
                 {
-                  (post?.comments?.length > 0)
+                  (post?.data?.comments?.length > 0)
                     ?
                     (
                       <Paper p={4}>
@@ -126,15 +122,15 @@ const Page = () => {
                             <Group>
 
                               <Text fw={400} size='lg'>
-                                {post?.comments[post?.comments.length - 1]?.userName}
+                                {post?.data?.comments[post?.data?.comments.length - 1]?.userName}
                               </Text>
                               <Divider variant="dotted" orientation="vertical" color='black' />
                               <Text fw={200} size='sm'>
-                                {calculateTimeDuration(Number(post?.comments[post?.comments.length - 1]?.timestamp))}
+                                {calculateTimeDuration(Number(post?.data?.comments[post?.data?.comments.length - 1]?.timestamp))}
                               </Text>
                             </Group>
                             <Text>
-                              {post?.comments[post?.comments.length - 1]?.text}
+                              {post?.data?.comments[post?.data?.comments.length - 1]?.text}
                             </Text>
                           </Stack>
                         </Group>
@@ -167,7 +163,7 @@ const Page = () => {
                 />
 
                 <Text mt="xs" size='sm'>
-                  {post.likes?.length || 0} likes {post?.comments ? `and ${post?.comments.length} comments` : ``}
+                  {post?.data?.likes?.length || 0} likes {post?.data?.comments ? `and ${post?.data?.comments.length} comments` : ``}
                 </Text>
 
               </Paper>
