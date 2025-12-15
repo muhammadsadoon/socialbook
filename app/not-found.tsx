@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 // import { Button, Text, Center, Stack, Paper, Group } from '@mantine/core';
 // import { IconHome, IconError404 } from '@tabler/icons-react';
 // import { useRouter } from 'next/navigation';
@@ -28,15 +28,24 @@
 //   );
 // }
 
-import Link from 'next/link'
-export default async function NotFound() {
+import { Button, Container, Group, Text, Title } from '@mantine/core';
+import { IconAlertTriangle } from '@tabler/icons-react';
+import Link from 'next/link';
+export default function NotFound() {
   return (
-    <div>
-      <h2>Not Found: </h2>
-      <p>Could not find requested resource</p>
-      <p>
-        View <Link href="/">all posts</Link>
-      </p>
-    </div>
+    <Container size="md" style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
+      <IconAlertTriangle size={100} style={{ color: 'var(--mantine-color-red-6)' }} />
+      <Title order={1} style={{ marginTop: 20, marginBottom: 10 }}>
+        404 - Page Not Found
+      </Title>
+      <Text c="dimmed" size="lg" style={{ marginBottom: 30 }}>
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+      </Text>
+      <Group justify="center">
+        <Button component={Link} href="/" variant="filled" size="md">
+          Go to Home Page
+        </Button>
+      </Group>
+    </Container>
   )
 }

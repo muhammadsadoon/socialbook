@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image';
-import React, { useState ,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactImageFileToBase64 from "react-file-image-to-base64";
 import { Button, Stack, Text, TextInput, Group, Textarea, Avatar, Divider } from '@mantine/core'
 import { useForm } from "@mantine/form";
@@ -14,6 +14,8 @@ import { auth } from '@/utils/firebase';
 import { checkImageFileSize } from '@/utils/custom-functions';
 const Page = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
   let temp: any = null;
   const form = useForm({
     mode: 'uncontrolled',
@@ -31,6 +33,7 @@ const Page = () => {
   // app dispatch function defined here...
   const dispatch = useDispatch<AppDispatch>();
 
+  // handle the file submit on post section
   const handleOnCompleted = (files: any) => {
     const imageSize = checkImageFileSize(files[0]?.base64_file);
     if (imageSize < 125000) {
@@ -47,14 +50,17 @@ const Page = () => {
   const handleSubmit = (values: any) => {
     clearTimeout(temp);
     onAuthStateChanged(auth, (user) => {
-    temp = setTimeout(() => {
+      setLoading(true)
+      temp = setTimeout(() => {
         if (user) {
           dispatch(dispatchPostAction({ ...values, uid: user.uid })).catch((err) => {
             toast("😵 something went wrong..." + JSON.stringify(err));
+            setLoading(false)
           }).finally(() => {
             toast("🥳 Post created successfully!");
             form.reset();
             setImagePreview(null);
+            setLoading(false)
           });
         }
       }, 1000);
@@ -63,10 +69,10 @@ const Page = () => {
 
   // on component mounted
 
-  useEffect(()=>{
+  useEffect(() => {
     document.title = "Create the post | your mind";
-    
-  },[]);
+
+  }, []);
 
   const handleCustumizedButton = () => {
     return (
@@ -119,7 +125,7 @@ const Page = () => {
             </div>
           )}
           <Group justify="flex-end" mt="md">
-            <Button type="submit" className='bg-blue-600 hover:bg-blue-700'>Post</Button>
+            <Button loading={loading} loaderProps={{ type: 'oval' }} type="submit" className='bg-blue-600 hover:bg-blue-700'>Post</Button>
           </Group>
         </form>
       </Stack>

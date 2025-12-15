@@ -1,13 +1,12 @@
 "use client"
 import { useEffect, useState } from 'react'
-import { Button, Input, Avatar, Text, Paper, Group, Stack, Divider, ScrollArea, NavLink } from '@mantine/core'
+import { Button, Input, Avatar, Text, Group, Stack, Divider, NavLink } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import { IconHome, IconUsers, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin, IconPencilShare, IconHeartHandshake, IconFriends, IconMessageCog } from '@tabler/icons-react'
+import { IconHome, IconMessage, IconBell, IconSearch, IconPlus, IconList, IconLogout, IconLogin, IconPencilShare, IconHeartHandshake, IconFriends, IconMessageCog } from '@tabler/icons-react'
 import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { app, db } from '@/utils/firebase'
-import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
 import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/auth-action'
@@ -20,9 +19,8 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [opened, { open, close }] = useDisclosure(false);
   const [logedUser, setLogedUser] = useState<any>({});
-  // navigate hook
 
-  const router = useRouter();
+  // navigate hook
   const dispatch = useDispatch<AppDispatch>()
 
   // logout function defined here...
@@ -30,10 +28,9 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
     dispatch(dispatchLogOutState());
   }
 
-  const checkAuth = async () => {
+  const checkAuth = () => {
     onAuthStateChanged(getAuth(app), async (user) => {
       if (user) {
-        console.log(user)
         setIsAuth(true);
         const getUserFromFB = await getDocs(collection(db, "Users"));
         getUserFromFB.forEach((item) => {
@@ -89,10 +86,12 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
           isAuth && (isMobileOrTablet ? (
             <DrawerToggle close={close} isOpen={opened} >
               <Stack>
-                <Group>
-                  <Avatar size="md" />
-                  <Text fw={500}>{logedUser?.payload?.name}</Text>
-                </Group>
+                <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>
+                  <Group>
+                    <Avatar size="md" />
+                    <Text fw={500}>{logedUser?.payload?.name}</Text>
+                  </Group>
+                </Link>
                 <Divider />
                 <Button component={Link} href={"/"} variant={window.location.pathname == "/" ? "subtle" : ""} leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>
                 <Button component={Link} href={"/create-post"} variant="subtle" leftSection={<IconPlus size={20} />} fullWidth justify="flex-start">Create post</Button>
@@ -105,13 +104,12 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
           ) : (
             <aside className="w-64 bg-white p-4 border-r border-gray-200 shrink-0">
               <Stack>
-                <Group>
-                  <Avatar size="md" />
-
-                  <Text fw={500}>
-                    {logedUser?.payload?.name}
-                  </Text>
-                </Group>
+                <Link href={`/user/${(logedUser?.payload?.name)?.split(" ")?.join("-")}`}>
+                  <Group>
+                    <Avatar size="md" />
+                    <Text fw={500}>{logedUser?.payload?.name}</Text>
+                  </Group>
+                </Link>
                 <Divider />
                 <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
                 <NavLink variant="subtle" component={Link} href={"/create-post"} leftSection={<IconPencilShare size={20} />} label="Create Post" />
@@ -125,7 +123,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
 
         {/* Main Content */}
         <main className="flex-1 md:p-4">
-          <div className="max-w-4xl mx-auto space-y-4 h-full overflow-y-auto">
+          <div className="max-w-full mx-auto space-y-4 h-full overflow-y-auto">
             {/* Posts */}
             {children}
 

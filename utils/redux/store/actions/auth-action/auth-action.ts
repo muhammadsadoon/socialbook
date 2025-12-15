@@ -1,7 +1,7 @@
 import { SendSignInFormHandlerType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
 import { SET_AUTH_STATE } from "../../reducers/auth-reducer/auth-reducer";
 import { app, auth, db } from "@/utils/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDocs } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { deleteCookie, setCookie } from "cookies-next";
@@ -53,8 +53,25 @@ const dispatchLogOutState = () => {
     }
 }
 
+/**
+ * this function is return as a promise to handle the states...
+ */
+
+const findUserFromFB = (param:string) => {
+    return async () => {
+        console.log("param: ",param.split("-").join(" "))
+        const docRef = await getDocs(collection(db, "Users"));
+        let isTrue = false
+        docRef.forEach((data)=> {
+            if((data.data()).payload.name === param.split("-").join(" ")) isTrue = true;
+        });
+        if(!isTrue) throw isTrue;
+    }
+}
+
 export {
     dispatchSignUpState,
     dispatchSignInState,
-    dispatchLogOutState
+    dispatchLogOutState,
+    findUserFromFB
 };

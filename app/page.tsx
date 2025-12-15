@@ -4,7 +4,7 @@ import { calculateTimeDuration } from '@/utils/custum-code/custum-code';
 import { auth } from '@/utils/firebase';
 import { getAllPostFromFB, toggleLikeSendHandler, commetsSendHandler } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { AppDispatch } from '@/utils/redux/store/store';
-import { Avatar, Button, Divider, Group, Paper, Skeleton, Stack, Text, Textarea, TextInput } from '@mantine/core';
+import { Avatar, Button, Divider, Group, Image, Paper, Skeleton, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
@@ -44,7 +44,7 @@ const Page = () => {
 
   };
 
-
+  // dispatch like handler function
   const handlerLikeBTN = (post: any) => {
     dispatch(toggleLikeSendHandler({ post, userID: getAuthIDFromFB }));
     dispatch(getAllPostFromFB());
@@ -70,7 +70,7 @@ const Page = () => {
           [...getPosts].reverse().map((post: any, i: number) => {
             const key = getPostKey(post);
             return (
-              <Paper key={i} p="md" withBorder className="mb-4">
+              <Paper key={i} p="md" withBorder className="mb-1">
                 <Link href={`/user/${(post?.data?.name).split(" ").join("-")}`}>
                   <Group mb="sm">
                     <Avatar size="md" />
@@ -85,12 +85,8 @@ const Page = () => {
                 <Text fw={500}>{post?.title}</Text>
                 <Text mb="sm" className='line-clamp-2'>{post?.data?.content}</Text>
                 {post?.data?.image && (
-                  <div className="h-48 rounded mb-2">
-                    <img
-                      src={post.data?.image}
-                      className="w-full h-full object-cover rounded"
-                      alt="post-image"
-                    />
+                  <div className="h-full rounded mb-2">
+                    <Image src={post.data?.image} mah={300} h={"100%"} fit="fill" />
                   </div>
                 )}
                 <Group justify="space-between">
@@ -102,11 +98,11 @@ const Page = () => {
                         ? <IconHeartFilled />
                         : <IconHeart />
                     }
-                    onClick={() => handlerLikeBTN(post)}
+                    onClick={() => handlerLikeBTN({ post, docID: post?.docID })}
                   >
                     Like
                   </Button>
-                  <Button variant="subtle" size="sm">See More Comments</Button>
+                  <Button component={Link} href={`/post/${post?.docID}`} variant="subtle" size="sm">See More Comments</Button>
                 </Group>
                 <Text fw={600}>
                   Comments
@@ -198,4 +194,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Page;  

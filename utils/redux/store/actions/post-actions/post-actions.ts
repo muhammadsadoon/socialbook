@@ -36,13 +36,13 @@ const dispatchPostAction = (payload: any) => {
 const commetsSendHandler = (payload: any) => {
     return async () => {
         try {
-            if ((payload?.comment).trim()) {
+            if ((payload?.comment)?.trim()) {
                 const docSnap: any = await getDocs(collection(db, "posts"));
                 let getDataFromSnap: any = {};
-
+                console.log(payload)
                 // get data from fireStore
                 docSnap.forEach((data: any) => {
-                    if (data.data()?.createdDate == payload?.post?.createdDate) {
+                    if (data.data()?.createdDate == payload?.post?.data?.createdDate) {
                         getDataFromSnap.docId = data.id;
                         getDataFromSnap.data = data.data();
                     }
@@ -53,7 +53,7 @@ const commetsSendHandler = (payload: any) => {
 
                 // Always ensure comments is an array
                 const currentComments = (getDataFromSnap?.data?.comments)
-                    ? [...getDataFromSnap.data.comments]
+                    ? [...getDataFromSnap?.data?.comments]
                     : [];
 
                 // Unique key
@@ -75,6 +75,7 @@ const commetsSendHandler = (payload: any) => {
             } else throw "plase fill the input first";
 
         } catch (err) {
+            console.log(err)
             throw err
         }
     }
@@ -84,23 +85,23 @@ const commetsSendHandler = (payload: any) => {
 // handle likes section in FB (database)
 const toggleLikeSendHandler = (payload: any) => {
     return async () => {
-        console.log("payload: ", payload);
         const docSnap: any = await getDocs(collection(db, "posts"));
         let getDataFromSnap: any = {};
-
+        console.log(payload)
         // get data from fireStore 
         docSnap.forEach((data: any) => {
-            if ((data.data())?.uid == payload?.post?.uid) {
+            if (((data.id) === payload?.post?.docID)) {
                 getDataFromSnap.data = data.data();
                 getDataFromSnap.docId = data.id;
+                console.log(data.data());
             };
         })
 
         const docRef = doc(db, "posts", getDataFromSnap.docId);
-        if (getDataFromSnap?.data?.likes.includes(payload.userID)) {
-            getDataFromSnap?.data?.likes.splice(getDataFromSnap?.data?.likes?.indexOf(payload.userID), 1);
+        if (getDataFromSnap?.data?.likes?.includes(payload.userID)) {
+            getDataFromSnap?.data?.likes?.splice(getDataFromSnap?.data?.likes?.indexOf(payload.userID), 1);
             await updateDoc(docRef, {
-                likes: getDataFromSnap.data.likes
+                likes: getDataFromSnap?.data?.likes
             })
         } else {
             getDataFromSnap?.data?.likes.push(payload.userID);
@@ -117,7 +118,7 @@ const getAllPostFromFB = () => {
             const data = await getDocs(collection(db, "posts"));
             let temp: any[] = [];
             data.forEach((item) => {
-                temp.push({data:item.data(),docID:item.id})
+                temp.push({ data: item.data(), docID: item.id })
             });
             dispatch(SET_ALL_POST_BY_FB(temp));
         } catch (err) {
