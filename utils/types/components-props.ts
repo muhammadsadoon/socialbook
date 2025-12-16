@@ -1,8 +1,8 @@
 export type ReduxProviderProps = {
-    children : React.ReactNode;
+    children: React.ReactNode;
 }
 export type ThemeProviderProps = {
-    children : React.ReactNode;
+    children: React.ReactNode;
 }
 
 export type SendSignUpFormHandlerType = {
@@ -12,6 +12,16 @@ export type SendSignUpFormHandlerType = {
     password: string;
     termsOfService: boolean;
 }
+export type SendSignInWithGoogleType = {
+    name: string | null,
+    photoUrl: string | null,
+    phone: string | null,
+    verifiedEmail: boolean | null,
+    email: string | null,
+    uid: string | null,
+    password: string | null,
+    token?: string | null
+}
 export type SendSignInFormHandlerType = {
     email: string;
     password: string;
@@ -19,9 +29,9 @@ export type SendSignInFormHandlerType = {
 }
 
 export type DrawerComponentType = {
-    children:React.ReactNode;
-    isOpen:boolean;
-    close: ()=> void;
+    children: React.ReactNode;
+    isOpen: boolean;
+    close: () => void;
 }
 
 export type InfiniteScrollComponent = {
@@ -29,7 +39,7 @@ export type InfiniteScrollComponent = {
     functionality?: Function;
 }
 export type DashBoardLayoutType = {
-    children:React.ReactNode;
-    leftSection?:React.ReactNode;
-    rightSection?:React.ReactNode;
+    children: React.ReactNode;
+    leftSection?: React.ReactNode;
+    rightSection?: React.ReactNode;
 }

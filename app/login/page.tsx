@@ -1,9 +1,12 @@
 "use client";
-import { dispatchSignInState } from '@/utils/redux/store/actions/auth-action/auth-action';
+import { auth } from '@/utils/firebase';
+import { dispatchSignInState, dispatchSignInWithGoogle } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
-import { SendSignInFormHandlerType } from '@/utils/types/components-props';
-import { Button, Checkbox, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
+import { SendSignInFormHandlerType, SendSignInWithGoogleType } from '@/utils/types/components-props';
+import { Button, Checkbox, Divider, Group, PasswordInput, Stack, Text, TextInput, Typography } from '@mantine/core'
 import { useForm } from "@mantine/form";
+import { IconBrandFacebook, IconBrandFacebookFilled, IconBrandGithub, IconBrandGoogle, IconBrandGoogleFilled } from '@tabler/icons-react';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
@@ -19,7 +22,7 @@ const LogInScreen = () => {
         },
         validate: {
             email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-            password: (value) => (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*+]).{8,}$/.test(value) ? null : 'Please enter the more stronger password be like 8 characters, numbers,special character...'),
+            password: (value) => (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&<>*+]).{4,}$/.test(value) ? null : 'Please enter the more stronger password be like 8 characters, numbers,special character...'),
         },
     });
 
@@ -28,14 +31,14 @@ const LogInScreen = () => {
 
     // dispatch functions defined here...
     const dispatch = useDispatch<AppDispatch>();
-    
+
     // Sign In Handler
     const signInFromHanlder = (values: SendSignInFormHandlerType): void => {
         var isTrue: Boolean = true;
         dispatch(dispatchSignInState(values))
             .catch((err) => { toast(`🤡 ${err}`); isTrue = false })
             .finally(() => {
-                if(isTrue) {
+                if (isTrue) {
                     toast("🥳 Form is submitted");
                     form.reset();
                     router.push("/");
@@ -43,15 +46,49 @@ const LogInScreen = () => {
                 isTrue = true;
             });
     }
+    // hanlde signin with google instance...
+    const handleGoogleSignIn = async () => {
+        var isTrue: Boolean = true;
 
+        try {
+
+            const provider = new GoogleAuthProvider();
+            const resGoogle = await signInWithPopup(auth, provider);
+
+            const saveUser: SendSignInWithGoogleType = {
+                name: resGoogle.user.displayName,
+                photoUrl: resGoogle.user.photoURL,
+                phone: resGoogle.user.phoneNumber,
+                verifiedEmail: resGoogle.user.emailVerified,
+                email: resGoogle.user.email,
+                uid: resGoogle.user.uid,
+                password: "",
+                token: await resGoogle.user.getIdToken()
+            }
+            dispatch(dispatchSignInWithGoogle(saveUser))
+                .catch((err) => { toast(`🤡 ${err}`); isTrue = false })
+                .finally(() => {
+                    if (isTrue) {
+                        toast("🥳 Form is submitted");
+                        form.reset();
+                        router.push("/");
+                    }
+                    isTrue = true;
+                });
+
+        } catch (err) {
+            toast("Some thing went worng while google signIn");
+        }
+
+    }
     return (
-        <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
+        <div className='min-h-full h-full w-full flex items-center justify-center flex-col gap-4'>
             <Toaster />
             <Stack className='min-h-[350px] bg-white w-[40vw] min-w-[300px] border border-slate-200 p-4 shadow rounded-sm'>
                 <Text size='xl' color='blue' fw={700}>
                     Sign In
                 </Text>
-                <form className='my-5' onSubmit={form.onSubmit((values) => signInFromHanlder(values))}>
+                <form className='my-3' onSubmit={form.onSubmit((values) => signInFromHanlder(values))}>
                     <TextInput
                         withAsterisk
                         label="Email"
@@ -71,7 +108,7 @@ const LogInScreen = () => {
                     />
                     <Checkbox
                         mt="md"
-                        label="I agree to sell my privacy"
+                        label="I accept your policy!"
                         id="termsOfService"
                         key={form.key('termsOfService')}
                         {...form.getInputProps('termsOfService', { type: 'checkbox' })}
@@ -84,6 +121,10 @@ const LogInScreen = () => {
                         </Text>
                     </Group>
                 </form>
+                <Divider label={"OR"} />
+                <Button onClick={handleGoogleSignIn} leftSection={<IconBrandGoogle />}>
+                    Continue with Google
+                </Button>
             </Stack>
         </div>
     )

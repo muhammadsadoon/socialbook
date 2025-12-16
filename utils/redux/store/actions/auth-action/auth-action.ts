@@ -1,4 +1,4 @@
-import { SendSignInFormHandlerType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
+import { SendSignInFormHandlerType, SendSignInWithGoogleType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
 import { SET_AUTH_STATE } from "../../reducers/auth-reducer/auth-reducer";
 import { app, auth, db } from "@/utils/firebase";
 import { collection, addDoc, doc, getDocs } from "firebase/firestore";
@@ -29,6 +29,25 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
             setCookie("token", cookie);
             const dispatchUser = {
                 ...payload,
+                error: false,
+                errorMessage: "",
+            }
+            dispatch(SET_AUTH_STATE(dispatchUser));
+
+        } catch (err: any) {
+            throw `Error: ${err}`;
+        }
+    };
+};
+const dispatchSignInWithGoogle = (payloadprop: SendSignInWithGoogleType) => {
+    return async (dispatch: any) => {
+        try {
+            const auth = getAuth(app);
+            const {uid,token , ...payload} = payloadprop;
+            await addDoc(collection(db, "Users"), { payload, uid:uid, requests: [] });
+            setCookie("token", token);
+            const dispatchUser = {
+                ...payloadprop,
                 error: false,
                 errorMessage: "",
             }
@@ -73,5 +92,6 @@ export {
     dispatchSignUpState,
     dispatchSignInState,
     dispatchLogOutState,
-    findUserFromFB
+    findUserFromFB,
+    dispatchSignInWithGoogle
 };
