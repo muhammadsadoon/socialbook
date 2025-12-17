@@ -1,10 +1,11 @@
 "use client";
 
+import PostImageGrid from '@/components/post-image-grid/post-image-grid';
 import { calculateTimeDuration } from '@/utils/custum-code/custum-code';
 import { auth } from '@/utils/firebase';
 import { getAllPostFromFB, toggleLikeSendHandler, commetsSendHandler } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { AppDispatch } from '@/utils/redux/store/store';
-import { Avatar, Button, Divider, Group, Image, Paper, Skeleton, Stack, Text, Textarea, TextInput } from '@mantine/core';
+import { AspectRatio, Avatar, Button, Divider, Group, Image, Paper, Skeleton, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
@@ -73,7 +74,9 @@ const Page = () => {
               <Paper key={i} p="md" withBorder className="mb-1">
                 <Link href={`/user/${(post?.data?.name).split(" ").join("-")}`}>
                   <Group mb="sm">
-                    <Avatar size="md" />
+                    <Avatar size="md" src={post?.data?.photoUrl ?? ""}>
+                      {!(post?.data?.photoUrl) ? (post?.data?.name).split(" ").map((item:string) => item.slice(0,1).toUpperCase()).join("") : ""}
+                    </Avatar>
                     <div>
                       <Text fw={500}>{post?.data?.name}</Text>
                       <Text size="sm" c="dimmed">
@@ -82,13 +85,9 @@ const Page = () => {
                     </div>
                   </Group>
                 </Link>
-                <Text fw={500}>{post?.title}</Text>
+                <Text fw={500}>{post?.data?.title}</Text>
                 <Text mb="sm" className='line-clamp-2'>{post?.data?.content}</Text>
-                {post?.data?.image && (
-                  <div className="h-full rounded mb-2">
-                    <Image src={post.data?.image} mah={300} h={"100%"} fit="fill" />
-                  </div>
-                )}
+                {post?.data?.imageUrls && <PostImageGrid images={post?.data?.imageUrls} />}
                 <Group justify="space-between">
                   <Button
                     variant="subtle"

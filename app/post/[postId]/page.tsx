@@ -14,7 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/utils/redux/store/store';
 import toast, { Toaster } from 'react-hot-toast';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import PostImageGrid from '@/components/post-image-grid/post-image-grid';
 const getPostKey = (post: any) => {
   return `${post?.uid ?? "no-uid"}-${post?.createdDate ?? "no-date"}`;
 };
@@ -61,8 +62,9 @@ export default function Page() {
         setLoading(false)
         getPost();
       })
-
-  };
+      
+    };
+    console.log(post)
 
   // dispatch like handler function
   const handlerLikeBTN = (post: any) => {
@@ -78,7 +80,6 @@ export default function Page() {
     });
 
   }, []);
-
   const key = getPostKey(post);
   if (!isUserFind) return <Loading />
   else return (post) ?
@@ -97,11 +98,7 @@ export default function Page() {
       </Link>
       <Text fw={500}>{post?.data?.title}</Text>
       <Text mb="sm">{post?.data?.content}</Text>
-      {post?.data?.image && (
-        <div className="h-full rounded mb-2">
-          <Image src={post?.data?.image} w="100%" h="auto" fit="contain" />
-        </div>
-      )}
+      {post && <PostImageGrid images={post?.data?.imageUrls} />}
       <Group justify="space-between">
         <Button
           variant="subtle"

@@ -13,13 +13,15 @@ import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/aut
 import Link from 'next/link'
 import { collection, getDocs } from 'firebase/firestore'
 import { SET_AUTH_STATE } from '@/utils/redux/store/reducers/auth-reducer/auth-reducer'
+import { getCookie } from 'cookies-next'
 
 const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
+  
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [opened, { open, close }] = useDisclosure(false);
   const [logedUser, setLogedUser] = useState<any>({});
-
+  const [isCookie,setIsCookie] = useState<boolean>(false)
   // navigate hook
   const dispatch = useDispatch<AppDispatch>()
 
@@ -31,6 +33,8 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   const checkAuth = () => {
     onAuthStateChanged(getAuth(app), async (user) => {
       if (user) {
+        const token = getCookie("token");
+        setIsCookie(token ? true : false);
         setIsAuth(true);
         const getUserFromFB = await getDocs(collection(db, "Users"));
         getUserFromFB.forEach((item) => {
@@ -64,7 +68,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
             />
           </div>
         </div>
-        {isAuth && (<nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
+        {isAuth && isCookie && (<nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
           {
             (!isAuth)
               ?
@@ -83,7 +87,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
         {/* Left Sidebar */}
         {
 
-          isAuth && (isMobileOrTablet ? (
+          isAuth && isCookie && (isMobileOrTablet ? (
             <DrawerToggle close={close} isOpen={opened} >
               <Stack>
                 <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>

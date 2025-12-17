@@ -1,42 +1,68 @@
 "use client";
-import { auth } from "@/utils/firebase";
-import { getRedirectResult, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import React, { useState } from 'react';
+import axios from 'axios';
 
+const CLOUDINARY_CLOUD_NAME = 'df0ad27h1'; // Replace with your Cloud Name
+const CLOUDINARY_UPLOAD_PRESET = 'socialbook-project'; // Replace with your Unsigned Upload Preset name
 
-const page = () => {
-    const handleSignUP = () => {
-        const provider = new GoogleAuthProvider();
-        // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-        // provider.setCustomParameters({
-        //     'login_hint': 'muhammadsadoonsohail786@example.com'
-        // });
+const ImageUpload: React.FC = () => {
+  const [image, setImage] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [url, setUrl] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
-                // IdP data available using getAdditionalUserInfo(result)
-                // ...
-            }).catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                // ...
-            });
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    } else {
+      setImage(null);
     }
-    return (
-        <div>
-            <h1>google sign up</h1>
-            <button onClick={() => handleSignUP()}>sigin with google</button>
-        </div>
-    )
-}
+    setUrl('');
+    setError('');
+  };
 
-export default page
+  const uploadImage = async () => {
+    if (!image) return;
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', image);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData
+      );
+      setUrl(response.data.secure_url);
+      setLoading(false);
+      setImage(null); // Clear the selected file input
+    } catch (err) {
+      setError('Upload failed');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Upload Image to Cloudinary</h2>
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      <button onClick={uploadImage} disabled={!image || loading}>
+        {loading ? 'Uploading...' : 'Upload'}
+      </button>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {url && (
+        <div>
+          <p>Image uploaded successfully:</p>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {url}
+          </a>
+          <img src={url} alt="Uploaded" style={{ marginTop: '10px', maxWidth: '300px' }} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ImageUpload;

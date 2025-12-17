@@ -1,6 +1,7 @@
 "use client"
 
 import Loading from "@/app/loading";
+import PostImageGrid from "@/components/post-image-grid/post-image-grid";
 import { calculateTimeDuration } from "@/utils/custum-code/custum-code";
 import { auth } from "@/utils/firebase";
 import { findUserFromFB } from "@/utils/redux/store/actions/auth-action/auth-action";
@@ -24,7 +25,7 @@ const page = () => {
   const [commentValues, setCommentValues] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [isFindUser, setIsFindUser] = useState<boolean>(false);
-
+  const [isAdmin,setIsAdmin] = useState<any>({});
 
   // get parameter from client url...
   const { ["user-profile"]: param }: { ["user-profile"]: string } = useParams();
@@ -94,10 +95,11 @@ const page = () => {
                 <Avatar
                   size={180}
                   radius="xl"
-                  alt="User avatar"
+                  alt={`@${param}`}
                   style={{ border: '4px solid white' }}
+                  src={getAuthStateFromFB.payload.name === param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase() ? getAuthStateFromFB.payload.photoUrl : "" }
                 >
-                  {param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase()}
+                  { getAuthStateFromFB.payload.name == param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase() ? "" :  param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase()}
                 </Avatar>
                 <Stack gap="sm" pb="md">
                   <Text size="xl" w={700}>
@@ -131,15 +133,7 @@ const page = () => {
                   </Group>
                   <Text fw={500}>{post?.data?.title}</Text>
                   <Text mb="sm" className='line-clamp-2'>{post?.data?.content}</Text>
-                  {post?.data.image && (
-                    <div className="h-48 rounded mb-2">
-                      <img
-                        src={post?.data.image}
-                        className="w-full h-full object-cover rounded"
-                        alt="post-image"
-                      />
-                    </div>
-                  )}
+                  {post?.data?.imageUrls && <PostImageGrid images={post?.data?.imageUrls} />}
                   <Group justify="space-between">
                     <Button
                       variant="subtle"

@@ -1,28 +1,30 @@
 "use client"
-import Image from 'next/image';
-import React, { useState, useEffect } from 'react'
-import ReactImageFileToBase64 from "react-file-image-to-base64";
+import { FileInput, Image } from "@mantine/core"
+import { useState, useEffect } from 'react'
 import { Button, Stack, Text, TextInput, Group, Textarea, Avatar, Divider } from '@mantine/core'
 import { useForm } from "@mantine/form";
 import toast, { Toaster } from 'react-hot-toast';
-import { IconPhoto } from '@tabler/icons-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { dispatchPostAction } from '@/utils/redux/store/actions/post-actions/post-actions';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/utils/firebase';
-import { checkImageFileSize } from '@/utils/custom-functions';
+import ImageUpload from '@/components/upload-file/upload-file';
+
 const Page = () => {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   let temp: any = null;
+
+  const getAuthStateFromFB = useSelector((data: any) => data.authStates?.isAuthentication);
+
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
       title: '',
       content: '',
-      image: null,
     },
     validate: {
       title: (value) => (value.length > 0 ? null : 'Title is required'),
@@ -30,102 +32,121 @@ const Page = () => {
     },
   });
 
-  // app dispatch function defined here...
   const dispatch = useDispatch<AppDispatch>();
 
-  // handle the file submit on post section
-  const handleOnCompleted = (files: any) => {
-    const imageSize = checkImageFileSize(files[0]?.base64_file);
-    if (imageSize < 125000) {
-      form.setFieldValue('image', files[0]?.base64_file);
-      setImagePreview(files[0].base64_file);
-    } else {
-      toast("😵 Your Image is to large please resubmitted image less then 500 kb")
-    }
-
-  }
-
-
-  // handler dispatch post submitting
   const handleSubmit = (values: any) => {
     clearTimeout(temp);
+
     onAuthStateChanged(auth, (user) => {
-      setLoading(true)
+      setLoading(true);
+
       temp = setTimeout(() => {
         if (user) {
-          dispatch(dispatchPostAction({ ...values, uid: user.uid })).catch((err) => {
-            toast("😵 something went wrong..." + JSON.stringify(err));
-            setLoading(false)
-          }).finally(() => {
-            toast("🥳 Post created successfully!");
-            form.reset();
-            setImagePreview(null);
-            setLoading(false)
-          });
+          dispatch(
+            dispatchPostAction({
+              ...values,
+              imageUrls, // ✅ MULTIPLE IMAGES
+              uid: user.uid,
+            })
+          )
+            .then(() => {
+              toast("🥳 Post created successfully!");
+              form.reset();
+              setImageUrls([]);
+            })
+            .catch((err) => {
+              toast("😵 something went wrong..." + JSON.stringify(err));
+            })
+            .finally(() => setLoading(false));
         }
-      }, 1000);
+      }, 800);
     });
-  }
-
-  // on component mounted
+  };
 
   useEffect(() => {
     document.title = "Create the post | your mind";
-
   }, []);
 
-  const handleCustumizedButton = () => {
-    return (
-      <Button variant="subtle" leftSection={<IconPhoto size={16} />} onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()}>
-        Photo/Video
-      </Button>
-    );
-  }
   return (
-    <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
+    <div className='h-full w-full flex items-center justify-center flex-col gap-4'>
       <Toaster />
-      <Stack className='min-h-[400px] bg-white w-[50vw] min-w-[400px] border border-slate-200 p-4 shadow rounded-lg'>
+
+      <Stack className='bg-white w-[50vw] min-w-[400px] p-4 shadow rounded-lg'>
         <Group>
-          <Avatar size="md" />
-          <Text fw={500}>Your Name</Text>
+          <Avatar size="md" src={getAuthStateFromFB?.payload?.photoUrl} />
+          <Text fw={500}>{getAuthStateFromFB?.payload?.name}</Text>
         </Group>
+
         <Divider />
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+
+        <form onSubmit={form.onSubmit(handleSubmit)}>
           <TextInput
             withAsterisk
             label="Title"
             placeholder="What's on your mind?"
-            required
-            id="title"
-            key={form.key('title')}
             {...form.getInputProps('title')}
-            className="mb-4"
+            mb="sm"
           />
+
           <Textarea
             label="Content"
             placeholder="Share your thoughts..."
-            required
-            id="content"
-            key={form.key('content')}
             {...form.getInputProps('content')}
-            className="mb-4"
             minRows={3}
+            mb="sm"
           />
+
+          {/* IMAGE UPLOAD */}
           <div className="mb-4">
-            <Text size="sm" fw={500} mb="xs">Add to your post</Text>
-            <Group>
-              <ReactImageFileToBase64 onCompleted={handleOnCompleted} CustomisedButton={handleCustumizedButton} />
-              <Text size='sm'>While selecting an image, please make sure it is less than 500 KB.</Text>
-            </Group>
+            <Text size="sm" fw={500} mb="xs">Add images</Text>
+
+            <FileInput
+              accept="image/*"
+              placeholder="Choose image"
+              onChange={(file) => {
+                if (!file) return;
+                setCurrentFile(file);
+              }}
+            />
+
+            <ImageUpload
+              file={currentFile}
+              onUploadComplete={(url) => {
+                setImageUrls((prev) => [...prev, url]);
+                setCurrentFile(null);
+              }}
+            />
           </div>
-          {imagePreview && (
-            <div className="mb-4">
-              <Text size="sm" fw={500} mb="xs">Image Preview</Text>
-              <Image src={imagePreview} height={100} width={100} alt="Preview" />
-            </div>
+
+          {/* IMAGE PREVIEW */}
+          {imageUrls.length > 0 && (
+            <Group gap="sm" mb="md">
+              {imageUrls.map((url, index) => (
+                <Image
+                  key={index}
+                  src={url}
+                  h={80}
+                  w={80}
+
+                  fit="cover"
+                  radius="md"
+                  styles={{
+                    root: { overflow: "hidden" },
+                  }}
+                />
+              ))}
+            </Group>
           )}
-          <Group justify="flex-end" mt="md">
-            <Button loading={loading} loaderProps={{ type: 'oval' }} type="submit" className='bg-blue-600 hover:bg-blue-700'>Post</Button>
+
+          <Group justify="flex-end">
+            <Button
+              loading={loading}
+              loaderProps={{ type: 'oval' }}
+              type="submit"
+              className='bg-blue-600 hover:bg-blue-700'
+            >
+              Post
+            </Button>
           </Group>
         </form>
       </Stack>
@@ -133,4 +154,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default Page;
