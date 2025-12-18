@@ -93,7 +93,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{logedUser?.payload?.name}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name).split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />
@@ -111,7 +111,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split(" ")?.join("-")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{logedUser?.payload?.name}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name).split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />

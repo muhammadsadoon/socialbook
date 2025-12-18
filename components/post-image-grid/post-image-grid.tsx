@@ -1,6 +1,8 @@
 "use client";
 import { Image, SimpleGrid, Box, Text } from "@mantine/core";
-import { PhotoView, PhotoProvider } from 'react-photo-view';
+import { PhotoView, PhotoProvider } from "react-photo-view";
+import { useMediaQuery } from "@mantine/hooks";
+
 interface Props {
     images: string[];
 }
@@ -8,20 +10,47 @@ interface Props {
 export default function PostImageGrid({ images }: Props) {
     if (!images || images.length === 0) return null;
 
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const count = images.length;
+
+    const MAX = {
+        single: isMobile ? 280 : 420,
+        grid: isMobile ? 160 : 220,
+    };
+
+    // 🔹 reusable image wrapper
+    const ImageWrapper = ({
+        children,
+    }: {
+        children: React.ReactNode;
+    }) => (
+        <Box
+            bg="gray.2"
+            w="100%"
+            display="flex"
+            style={{ overflow: "hidden" }}
+            className="items-center justify-center"
+
+        >
+            {children}
+        </Box>
+    );
 
     // ---------- 1 IMAGE ----------
     if (count === 1) {
         return (
             <PhotoProvider>
-                <PhotoView src={images[0]}>
-                    <Image
-                        src={images[0]}
-                        height={300}
-                        radius="md"
-                        fit="cover"
-                    />
-                </PhotoView>
+                <ImageWrapper>
+                    <PhotoView src={images[0]}>
+                        <Image
+                            src={images[0]}
+                            w="100%"
+                            mah={MAX.single}
+                            fit="contain"
+                            style={{ cursor: "zoom-in" }}
+                        />
+                    </PhotoView>
+                </ImageWrapper>
             </PhotoProvider>
         );
     }
@@ -32,9 +61,17 @@ export default function PostImageGrid({ images }: Props) {
             <SimpleGrid cols={2} spacing={4}>
                 <PhotoProvider>
                     {images.map((img, i) => (
-                        <PhotoView key={i} src={img}>
-                            <Image src={img} height={200} fit="cover" radius="md" />
-                        </PhotoView>
+                        <ImageWrapper key={i}>
+                            <PhotoView src={img}>
+                                <Image
+                                    src={img}
+                                    w="100%"
+                                    mah={MAX.grid}
+                                    fit="cover"
+                                    style={{ cursor: "zoom-in" }}
+                                />
+                            </PhotoView>
+                        </ImageWrapper>
                     ))}
                 </PhotoProvider>
             </SimpleGrid>
@@ -47,15 +84,31 @@ export default function PostImageGrid({ images }: Props) {
             <SimpleGrid cols={2} spacing={4}>
                 <PhotoProvider>
                     <PhotoView src={images[0]}>
-                        <Image src={images[0]} height={300} fit="cover" radius="md" />
+                        <ImageWrapper>
+                            <Image
+                                src={images[0]}
+                                w="100%"
+                                mah={MAX.single}
+                                fit="cover"
+                                style={{ cursor: "zoom-in" }}
+                            />
+                        </ImageWrapper>
                     </PhotoView>
+
                     <SimpleGrid cols={1} spacing={4}>
-                        <PhotoView src={images[1]}>
-                            <Image src={images[1]} height={148} fit="cover" radius="md" />
-                        </PhotoView>
-                        <PhotoView src={images[2]}>
-                            <Image src={images[2]} height={148} fit="cover" radius="md" />
-                        </PhotoView>
+                        {images.slice(1).map((img, i) => (
+                            <PhotoView key={i} src={img}>
+                                <ImageWrapper>
+                                    <Image
+                                        src={img}
+                                        w="100%"
+                                        mah={MAX.grid}
+                                        fit="cover"
+                                        style={{ cursor: "zoom-in" }}
+                                    />
+                                </ImageWrapper>
+                            </PhotoView>
+                        ))}
                     </SimpleGrid>
                 </PhotoProvider>
             </SimpleGrid>
@@ -68,33 +121,36 @@ export default function PostImageGrid({ images }: Props) {
             <PhotoProvider>
                 {images.slice(0, 4).map((img, i) => {
                     const extra = count - 4;
+
                     return (
                         <Box key={i} pos="relative">
-                            <Box className="h-64 overflow-hidden">
+                            <ImageWrapper>
                                 <PhotoView src={img}>
-                                    <Image src={img} height={150} fit="cover" radius="md" />
-                                </PhotoView>
-                            </Box>
-                            {i === 3 && extra > 0 && (
-
-                                <PhotoView src={img} >
-                                    <Box
-                                        pos="absolute"
-                                        top={0}
-                                        left={0}
+                                    <Image
+                                        src={img}
                                         w="100%"
-                                        h="100%"
-                                        bg="rgba(0,0,0,0.6)"
-                                        style={{ borderRadius: 8 }}
-                                        display="flex"
-                                        className="justify-center items-center"
-                                    >
-                                        <Text c="white" size="xl" fw={700}>
+                                        mah={MAX.grid}
+                                        fit="cover"
+                                        style={{ cursor: "zoom-in" }}
+                                    />
+                                </PhotoView>
+                            </ImageWrapper>
+
+                            {i === 3 && extra > 0 && (
+                                <Box
+                                    pos="absolute"
+                                    inset={0}
+                                    bg="rgba(0,0,0,0.6)"
+                                    display="flex"
+                                    className="items-center justify-center"
+                                    style={{ borderRadius: 8 }}
+                                >
+                                    <PhotoView src={img}>
+                                        <Text c="white" size={isMobile ? "lg" : "xl"} fw={700}>
                                             +{extra}
                                         </Text>
-
-                                    </Box>
-                                </PhotoView>
+                                    </PhotoView>
+                                </Box>
                             )}
                         </Box>
                     );

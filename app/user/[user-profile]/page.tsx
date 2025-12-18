@@ -97,7 +97,7 @@ const page = () => {
                   radius="xl"
                   alt={`@${param}`}
                   style={{ border: '4px solid white' }}
-                  src={getAuthStateFromFB.payload.name === param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase() ? getAuthStateFromFB.payload.photoUrl : "" }
+                  src={getAuthStateFromFB.payload.photoUrl ?? ""}
                 >
                   { getAuthStateFromFB.payload.name == param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase() ? "" :  param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase()}
                 </Avatar>
@@ -123,7 +123,9 @@ const page = () => {
               return (
                 <Paper key={i} p="md" withBorder className="mb-4">
                   <Group mb="sm">
-                    <Avatar size="md" />
+                    <Avatar size="md" src={getAuthStateFromFB.payload.photoUrl ?? ""}>
+                      {getAuthStateFromFB.payload.photoUrl ? "" : param?.split("-").map((item) => item.slice(0, 1)).join("").toUpperCase()}
+                    </Avatar>
                     <div>
                       <Text fw={500}>{post?.data?.name}</Text>
                       <Text size="sm" c="dimmed">
