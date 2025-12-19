@@ -29,8 +29,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body
         cz-shortcut-listen="true"
-        ononline={()=> toast("😎 Your connection is restored!")}
-        onoffline={()=> toast("👽 Your connection is losed")}
+        {/*ononline={()=> toast("😎 Your connection is restored!")}
+        onoffline={()=> toast("👽 Your connection is losed")}*/}
       >
         <ReduxStoreProvider>
           <MantineThemeProvider>
