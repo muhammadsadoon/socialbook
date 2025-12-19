@@ -17,12 +17,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { PhotoProvider } from "react-photo-view";
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  // window.onoffline = () => {
-  //   toast("👽 You are currently offline...");
-  // }
-  // window.ononline = () => {
-  //   toast("😎 Now your connection is restored!!!")
-  // }
   useEffect(() => {
   }, [])
   return (
@@ -35,6 +29,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body
         cz-shortcut-listen="true"
+        onOnline={()=> toast("😎 Your connection is restored!")}
+        onOffline={()=> toast("👽 Your connection is losed")}
       >
         <ReduxStoreProvider>
           <MantineThemeProvider>
