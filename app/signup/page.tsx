@@ -1,4 +1,5 @@
 "use client";
+import {useEffect} from "react";
 import { dispatchSignUpState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignUpFormHandlerType } from '@/utils/types/components-props';
@@ -39,6 +40,9 @@ const SignUpScreen = () => {
             navigate.push("/");
         });
     }
+    useEffect(()=>{
+        document.title = "Create Account | Let's connect";
+    },[]);
     return (
         <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
             <Toaster />
