@@ -1,5 +1,5 @@
 "use client";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { dispatchSignUpState } from '@/utils/redux/store/actions/auth-action/auth-action';
 import { AppDispatch } from '@/utils/redux/store/store';
 import { SendSignUpFormHandlerType } from '@/utils/types/components-props';
@@ -35,14 +35,22 @@ const SignUpScreen = () => {
 
     const signUpFromHanlder = (values: SendSignUpFormHandlerType): void => {
         toast("🤩 Your Form is submitting...");
-        dispatch(dispatchSignUpState(values)).finally(() => {
-            form.reset();
-            navigate.push("/");
-        });
+        dispatch(dispatchSignUpState(values))
+            .then(() => {
+                navigate.push("/");
+            })
+            .catch((err) => toast(err, {
+                icon:"🤡",
+                iconTheme: {
+                    primary: '#000',
+                    secondary: '#fff',
+                },
+            }))
+            .finally(() => form.reset());
     }
-    useEffect(()=>{
+    useEffect(() => {
         document.title = "Create Account | Let's connect";
-    },[]);
+    }, []);
     return (
         <div className='min-h-[80vh] h-full w-full flex items-center justify-center flex-col gap-4'>
             <Toaster />
@@ -101,4 +109,4 @@ const SignUpScreen = () => {
     )
 }
 
-export default SignUpScreen
+export default SignUpScreen;

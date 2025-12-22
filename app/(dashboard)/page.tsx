@@ -7,7 +7,7 @@ import DrawerToggle from '@/components/drawer/drawer'
 import { DashBoardLayoutType } from '@/utils/types/components-props'
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { app, db } from '@/utils/firebase'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/utils/redux/store/store'
 import { dispatchLogOutState } from '@/utils/redux/store/actions/auth-action/auth-action'
 import Link from 'next/link'
@@ -23,13 +23,13 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   const [logedUser, setLogedUser] = useState<any>({});
   const [isCookie,setIsCookie] = useState<boolean>(false)
   // navigate hook
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
   // logout function defined here...
   const logoutAuth = () => {
     dispatch(dispatchLogOutState());
   }
-
+  // check auth
   const checkAuth = () => {
     onAuthStateChanged(getAuth(app), async (user) => {
       if (user) {
@@ -38,8 +38,8 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
         setIsAuth(true);
         const getUserFromFB = await getDocs(collection(db, "Users"));
         getUserFromFB.forEach((item) => {
-          if (item.data().uid == user?.uid) {
-            setLogedUser(item.data());
+          if ((item.data()).uid == user?.uid) {
+            setLogedUser(item.data())
             dispatch(SET_AUTH_STATE(item.data()));
           }
         })
@@ -60,13 +60,13 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
       <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <h1 className="text-2xl font-bold text-blue-600">Social Book</h1>
-          <div className="relative w-full sm:w-64">
+          {/* <div className="relative w-full sm:w-64">
             <Input
               placeholder="Search SocialBook"
               leftSection={<IconSearch size={16} />}
               className="w-full"
             />
-          </div>
+          </div> */}
         </div>
         {isAuth && isCookie && (<nav className="lg:flex hidden items-center space-x-2 sm:space-x-6 overflow-x-auto">
           {
@@ -93,14 +93,14 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{(logedUser?.payload?.name).split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />
                 <Button component={Link} href={"/"} variant={window.location.pathname == "/" ? "subtle" : ""} leftSection={<IconHome size={20} />} fullWidth justify="flex-start">Home</Button>
                 <Button component={Link} href={"/create-post"} variant="subtle" leftSection={<IconPlus size={20} />} fullWidth justify="flex-start">Create post</Button>
-                <Button component={Link} href={"#"} variant="subtle" leftSection={<IconFriends size={20} />} fullWidth justify="flex-start">Friend</Button>
-                <Button component={Link} href={"#"} variant="subtle" leftSection={<IconMessage size={20} />} fullWidth justify="flex-start">Message</Button>
+                <Button component={Link} href={"/friends"} variant="subtle" leftSection={<IconFriends size={20} />} fullWidth justify="flex-start">Friend</Button>
+                <Button component={Link} href={"/chat"} variant="subtle" leftSection={<IconMessage size={20} />} fullWidth justify="flex-start">Message</Button>
                 <Button variant="subtle" leftSection={<IconHome size={20} />} onClick={logoutAuth} fullWidth justify="flex-start">Logout</Button>
 
               </Stack>
@@ -111,14 +111,14 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split(" ")?.join("-")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{(logedUser?.payload?.name).split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />
                 <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
                 <NavLink variant="subtle" component={Link} href={"/create-post"} leftSection={<IconPencilShare size={20} />} label="Create Post" />
-                <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconHeartHandshake size={20} />} label="Friends" />
-                <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconMessage size={20} />} label="Messages" />
+                <NavLink variant="subtle" component={Link} href={"/friends"} leftSection={<IconHeartHandshake size={20} />} label="Friends" />
+                <NavLink variant="subtle" component={Link} href={"/chat"} leftSection={<IconMessage size={20} />} label="Messages" />
                 <NavLink variant="subtle" component={Link} href={"#"} leftSection={<IconBell size={20} />} label="Notifications" />
               </Stack>
             </aside>
@@ -126,7 +126,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
         }
 
         {/* Main Content */}
-        <main className="flex-1 md:p-4">
+        <main className="flex-1">
           <div className="max-w-full mx-auto space-y-4 h-full overflow-y-auto">
             {/* Posts */}
             {children}

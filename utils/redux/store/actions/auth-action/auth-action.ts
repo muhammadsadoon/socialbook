@@ -1,7 +1,7 @@
 import { SendSignInFormHandlerType, SendSignInWithGoogleType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
 import { SET_AUTH_STATE } from "../../reducers/auth-reducer/auth-reducer";
 import { app, auth, db } from "@/utils/firebase";
-import { collection, addDoc, doc, getDocs } from "firebase/firestore";
+import { collection, addDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { deleteCookie, setCookie } from "cookies-next";
@@ -35,7 +35,7 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
             dispatch(SET_AUTH_STATE(dispatchUser));
 
         } catch (err: any) {
-            throw `Error: ${err}`;
+            throw `Error: ${err.message}`;
         }
     };
 };
@@ -43,16 +43,19 @@ const dispatchSignInWithGoogle = (payloadprop: SendSignInWithGoogleType) => {
     return async (dispatch: any) => {
         try {
             const auth = getAuth(app);
-            const {uid,token , ...payload} = payloadprop;
-            await addDoc(collection(db, "Users"), { payload, uid:uid, requests: [] });
-            setCookie("token", token);
-            const dispatchUser = {
-                ...payloadprop,
-                error: false,
-                errorMessage: "",
+            const { uid, token, ...payload } = payloadprop;
+            const q = query(collection(db, "Users"), where("payload.email", "==", payload.email));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot) {
+                await addDoc(collection(db, "Users"), { payload, uid: uid, requests: [] });
+                setCookie("token", token);
+                const dispatchUser = {
+                    ...payloadprop,
+                    error: false,
+                    errorMessage: "",
+                }
+                dispatch(SET_AUTH_STATE(dispatchUser));
             }
-            dispatch(SET_AUTH_STATE(dispatchUser));
-
         } catch (err: any) {
             throw `Error: ${err}`;
         }
@@ -76,15 +79,15 @@ const dispatchLogOutState = () => {
  * this function is return as a promise to handle the states...
  */
 
-const findUserFromFB = (param:string) => {
+const findUserFromFB = (param: string) => {
     return async () => {
-        console.log("param: ",param.split("-").join(" "))
+        console.log("param: ", param.split("-").join(" "))
         const docRef = await getDocs(collection(db, "Users"));
         let isTrue = false
-        docRef.forEach((data)=> {
-            if((data.data()).payload.name === param.split("-").join(" ")) isTrue = true;
+        docRef.forEach((data) => {
+            if ((data.data()).payload.name === param.split("-").join(" ")) isTrue = true;
         });
-        if(!isTrue) throw isTrue;
+        if (!isTrue) throw isTrue;
     }
 }
 

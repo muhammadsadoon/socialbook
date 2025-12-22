@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -12,7 +13,8 @@ const firebaseConfig = {
   projectId: "facebook-clone-9dad9",
   storageBucket: "facebook-clone-9dad9.firebasestorage.app",
   messagingSenderId: "442299254748",
-  appId: "1:442299254748:web:cf54088f85b4334a41b119"
+  appId: "1:442299254748:web:cf54088f85b4334a41b119",
+  databaseURL: "https://facebook-clone-9dad9-default-rtdb.firebaseio.com/"
 };
 
 // Initialize Firebase
@@ -25,5 +27,5 @@ const db = getFirestore(app);
 export {
     app,
     auth,
-    db
+    db,
 }
