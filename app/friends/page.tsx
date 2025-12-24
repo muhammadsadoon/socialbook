@@ -27,6 +27,10 @@ export default function FriendsPage() {
     // dispatch functions defined here
     const dispatch = useDispatch<AppDispatch>();
     const authID = useSelector(({ authStates }: any) => authStates?.isAuthentication?.uid);
+<<<<<<< HEAD
+=======
+    // console.log(authID);
+>>>>>>> f21942ceccb662c757b772fbf5db4c3abf84bbeb
 
     useEffect(() => {
         dispatch(getAllFriendFromFB())

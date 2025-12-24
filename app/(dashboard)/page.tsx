@@ -57,7 +57,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
+      <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 flex flex-row items-center justify-between gap-4 sm:gap-0 shrink-0">
         <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <h1 className="text-2xl font-bold text-blue-600">Social Book</h1>
           {/* <div className="relative w-full sm:w-64">
