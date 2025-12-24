@@ -115,9 +115,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                   </Group>
                 </Link>
                 <Divider />
-                <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" >
-                  <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
-                </NavLink>
+                <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
                 <NavLink variant="subtle" component={Link} href={"/create-post"} leftSection={<IconPencilShare size={20} />} label="Create Post" />
                 <NavLink variant="subtle" component={Link} href={"/friends"} leftSection={<IconHeartHandshake size={20} />} label="Friends" />
                 <NavLink variant="subtle" component={Link} href={"/chat"} leftSection={<IconMessage size={20} />} label="Messages" />
