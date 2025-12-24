@@ -23,16 +23,15 @@ export default function FriendsPage() {
 
     const [users, setUser] = useState<Friend[]>();
     const [loader, setLoader] = useState<Boolean>(true);
+    
     // dispatch functions defined here
     const dispatch = useDispatch<AppDispatch>();
     const authID = useSelector(({ authStates }: any) => authStates?.isAuthentication?.uid);
-    console.log(authID);
 
     useEffect(() => {
         dispatch(getAllFriendFromFB())
             .then((data: Friend[]) => {
                 let temp = data.filter((i) => {
-                    console.log(`uid ${i.uid} ,auth id ${authID}`);
                     return(i.uid !== authID)
                 });
                 setUser(temp);

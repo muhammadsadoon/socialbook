@@ -12,9 +12,6 @@ import {
 import { IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
 
-// =====================
-// ChatSection (CENTER AREA ONLY)
-// =====================
 export default function ChatSection({ children }: { children: React.ReactNode }) {
   return (
     <Group h="100%" w="100%" align="stretch" wrap="nowrap">
@@ -32,7 +29,7 @@ export default function ChatSection({ children }: { children: React.ReactNode })
 
         <ScrollArea h="calc(100% - 56px)">
           <Stack gap="xs" p="sm">
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: 40 }).map((_, i) => (
               <UnstyledButton
                 key={i}
                 component={Link}

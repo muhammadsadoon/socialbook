@@ -16,12 +16,12 @@ import { SET_AUTH_STATE } from '@/utils/redux/store/reducers/auth-reducer/auth-r
 import { getCookie } from 'cookies-next'
 
 const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
-  
+
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const isMobileOrTablet = useMediaQuery('(max-width: 1023px)');
   const [opened, { open, close }] = useDisclosure(false);
   const [logedUser, setLogedUser] = useState<any>({});
-  const [isCookie,setIsCookie] = useState<boolean>(false)
+  const [isCookie, setIsCookie] = useState<boolean>(false)
   // navigate hook
   const dispatch = useDispatch<AppDispatch>();
 
@@ -93,7 +93,7 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item: string) => item.slice(0, 1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />
@@ -111,11 +111,13 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
                 <Link href={`/user/${(logedUser?.payload?.name)?.split(" ")?.join("-")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item:string)=> item.slice(0,1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item: string) => item.slice(0, 1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />
-                <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
+                <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" >
+                  <NavLink variant="subtle" component={Link} href={"/"} leftSection={<IconHome size={20} />} label="Home" />
+                </NavLink>
                 <NavLink variant="subtle" component={Link} href={"/create-post"} leftSection={<IconPencilShare size={20} />} label="Create Post" />
                 <NavLink variant="subtle" component={Link} href={"/friends"} leftSection={<IconHeartHandshake size={20} />} label="Friends" />
                 <NavLink variant="subtle" component={Link} href={"/chat"} leftSection={<IconMessage size={20} />} label="Messages" />
