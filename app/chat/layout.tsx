@@ -1,4 +1,6 @@
 "use client"
+import { getAllUserFromFB } from "@/utils/redux/store/actions/auth-action/auth-action";
+import { AppDispatch } from "@/utils/redux/store/store";
 import {
   Avatar,
   Box,
@@ -9,16 +11,32 @@ import {
   TextInput,
   UnstyledButton,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ChatSection({ children }: { children: React.ReactNode }) {
+  const [users, setUsers] = useState<any>([]);
+  const isMobileOrTablet = useMediaQuery('(max-width: 770px)');
+  const auth = useSelector((state:any) => state?.authStates?.isAuthentication);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleGetAllUsersFromFB = async () => {
+    const data: any = await dispatch(getAllUserFromFB());
+    setUsers(data);
+  }
+
+  useEffect(() => {
+    document.title = "Chat | SocialBook"
+    handleGetAllUsersFromFB();
+  }, []);
   return (
     <Group h="100%" w="100%" align="stretch" wrap="nowrap">
       {/* LEFT: USERS LIST */}
       <Box
-        w={280}
-        visibleFrom="sm"
+        w={isMobileOrTablet ? "100%" : 280}
         style={{ borderRight: "1px solid var(--mantine-color-gray-3)" }}
       >
         <TextInput
@@ -29,16 +47,16 @@ export default function ChatSection({ children }: { children: React.ReactNode })
 
         <ScrollArea h="calc(100% - 56px)">
           <Stack gap="xs" p="sm">
-            {Array.from({ length: 40 }).map((_, i) => (
+            {users && users?.map((user: any, i:number) => (
               <UnstyledButton
                 key={i}
                 component={Link}
-                href={`/chat/user-${i}`}
+                href={`/chat/${(user?.data?.payload?.name).split(" ").join("-")}`}
               >
                 <Group wrap="nowrap" p="xs">
                   <Avatar radius="xl" />
                   <Box>
-                    <Text size="sm" fw={500}>User {i}</Text>
+                    <Text size="sm" fw={500}>{user?.data?.payload?.name}</Text>
                     <Text size="xs" c="dimmed" lineClamp={1}>
                       Tap to open chat
                     </Text>
@@ -51,7 +69,7 @@ export default function ChatSection({ children }: { children: React.ReactNode })
       </Box>
 
       {/* RIGHT: CHAT CONTENT */}
-      <Box flex={1} bg="gray.0" h="100%">
+      <Box flex={1} h="100%">
         {children}
       </Box>
     </Group>

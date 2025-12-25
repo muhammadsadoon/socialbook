@@ -14,11 +14,8 @@ import 'react-photo-view/dist/react-photo-view.css';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import toast, { Toaster } from "react-hot-toast";
-import { PhotoProvider } from "react-photo-view";
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  useEffect(() => {
-  }, [])
   return (
     <html lang="en" data-mantine-color-scheme="light">
       <head>

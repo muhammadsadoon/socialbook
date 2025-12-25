@@ -24,7 +24,7 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
         try {
             const auth = getAuth(app);
             const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
-            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid, requests: [],friends: [] });
+            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid, requests: [], friends: [] });
             const cookie = await createUser?.user?.getIdToken();
             setCookie("token", cookie);
             const dispatchUser = {
@@ -47,7 +47,7 @@ const dispatchSignInWithGoogle = (payloadprop: SendSignInWithGoogleType) => {
             const q = query(collection(db, "Users"), where("payload.email", "==", payload.email));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot) {
-                await addDoc(collection(db, "Users"), { payload, uid: uid, requests: [],friends: [] });
+                await addDoc(collection(db, "Users"), { payload, uid: uid, requests: [], friends: [] });
                 setCookie("token", token);
                 const dispatchUser = {
                     ...payloadprop,
@@ -95,10 +95,21 @@ const findUserFromFB = (param: string) => {
     }
 }
 
+const getAllUserFromFB = () => {
+    return async () => {
+
+        // in future jab friends list ready ho jay gi tu limited user show karna hy...
+        let temp: any = [];
+        const snapshort = await getDocs(collection(db, "Users"));
+        snapshort.forEach((data) => temp.push({ docId: data.id, data: data.data() }));
+        return temp;
+    }
+}
 export {
     dispatchSignUpState,
     dispatchSignInState,
     dispatchLogOutState,
     findUserFromFB,
-    dispatchSignInWithGoogle
+    dispatchSignInWithGoogle,
+    getAllUserFromFB
 };
