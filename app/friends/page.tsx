@@ -1,7 +1,7 @@
 "use client";
 // pages/friends.tsx
 import { useEffect, useState } from "react";
-import { Container, Grid, Box } from "@mantine/core";
+import { Container, Grid, Box, Button } from "@mantine/core";
 import FriendsSection from "@/components/friends-section/friends-section";
 import Suggestions from "@/components/friends-section/suggations";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import { AppDispatch } from "@/utils/redux/store/store";
 import { getAllFriendFromFB } from "@/utils/redux/store/actions/friend-request-action/friend-request-action";
 import toast, { Toaster } from "react-hot-toast";
 import Loading from "../loading";
+import { IconRefresh } from "@tabler/icons-react";
 
 
 interface Friend {
@@ -23,21 +24,32 @@ export default function FriendsPage() {
 
     const [users, setUser] = useState<Friend[]>();
     const [loader, setLoader] = useState<Boolean>(true);
-    
+
     // dispatch functions defined here
     const dispatch = useDispatch<AppDispatch>();
     const authID = useSelector(({ authStates }: any) => authStates?.isAuthentication?.uid);
+    const profile = useSelector(({ authStates }: any) => authStates?.isAuthentication);
     // console.log(authID);
 
+    const refreshHandler = () => {
+        dispatch(getAllFriendFromFB())
+            .then((data: Friend[]) => {
+                let temp = data.filter((i) => {
+                    return (i.uid !== authID)
+                });
+                setUser(temp);
+                setLoader(false);
+            })
+            .catch((err) => toast(err))
+    }
     useEffect(() => {
         dispatch(getAllFriendFromFB())
             .then((data: Friend[]) => {
                 let temp = data.filter((i) => {
-                    return(i.uid !== authID)
+                    return (i.uid !== authID)
                 });
                 setUser(temp);
-
-                setLoader(false)
+                setLoader(false);
             })
             .catch((err) => toast(err))
     }, []);
@@ -49,7 +61,7 @@ export default function FriendsPage() {
                 {/* Left Sidebar */}
                 <Grid.Col span={12}>
                     <Box bg="white" p="md">
-                        Sidebar / Navigation
+                        Sidebar / Navigation <Button size="sm" onClick={refreshHandler}><IconRefresh /></Button>
                     </Box>
                 </Grid.Col>
 
@@ -60,7 +72,7 @@ export default function FriendsPage() {
 
                 {/* Right Sidebar / Suggestions */}
                 <Grid.Col span={12}>
-                    {users && <Suggestions suggestions={users.filter((e, i) => i < 3)} />}
+                    {users && <Suggestions suggestions={profile.requests} />}
                 </Grid.Col>
             </Grid>
         </Container>

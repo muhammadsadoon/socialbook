@@ -1,5 +1,5 @@
 import { SendSignInFormHandlerType, SendSignInWithGoogleType, SendSignUpFormHandlerType } from "@/utils/types/components-props";
-import { SET_AUTH_STATE } from "../../reducers/auth-reducer/auth-reducer";
+import { SET_AUTH_STATE, SET_PROFILE_USER } from "../../reducers/auth-reducer/auth-reducer";
 import { app, auth, db } from "@/utils/firebase";
 import { collection, addDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -24,7 +24,7 @@ const dispatchSignUpState = (payload: SendSignUpFormHandlerType) => {
         try {
             const auth = getAuth(app);
             const createUser = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
-            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid, requests: [] });
+            await addDoc(collection(db, "Users"), { payload, uid: createUser?.user?.uid, requests: [],friends: [] });
             const cookie = await createUser?.user?.getIdToken();
             setCookie("token", cookie);
             const dispatchUser = {
@@ -47,7 +47,7 @@ const dispatchSignInWithGoogle = (payloadprop: SendSignInWithGoogleType) => {
             const q = query(collection(db, "Users"), where("payload.email", "==", payload.email));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot) {
-                await addDoc(collection(db, "Users"), { payload, uid: uid, requests: [] });
+                await addDoc(collection(db, "Users"), { payload, uid: uid, requests: [],friends: [] });
                 setCookie("token", token);
                 const dispatchUser = {
                     ...payloadprop,
@@ -80,14 +80,18 @@ const dispatchLogOutState = () => {
  */
 
 const findUserFromFB = (param: string) => {
-    return async () => {
+    return async (dispatch: any) => {
         console.log("param: ", param.split("-").join(" "))
         const docRef = await getDocs(collection(db, "Users"));
-        let isTrue = false
+        let userData: any = null;
         docRef.forEach((data) => {
-            if ((data.data()).payload.name === param.split("-").join(" ")) isTrue = true;
+            if ((data.data()).payload.name === param.split("-").join(" ")) {
+                userData = data.data();
+            }
         });
-        if (!isTrue) throw isTrue;
+        if (!userData) throw new Error("User not found");
+        dispatch(SET_PROFILE_USER(userData));
+        return userData;
     }
 }
 

@@ -18,7 +18,7 @@ export default function FriendsSection({ friends }: Props) {
     return (
         <Box bg="white" p="md" w="100%">
             <Text size="lg" fw={500} mb="sm">
-                Friends
+                Finds Friends
             </Text>
 
             <TextInput placeholder="Search friends..." mb="sm" />

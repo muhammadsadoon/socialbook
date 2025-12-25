@@ -21,6 +21,7 @@
     "@mantine/modals": "^8.3.9",
     "@mantine/notifications": "^8.3.9",
     "@mantine/nprogress": "^8.3.9",
+    "@mantine/spotlight": "^8.3.10",
     "@mantine/tiptap": "^8.3.9",
     "@reduxjs/toolkit": "^2.11.0",
     "@tabler/icons-react": "^3.35.0",

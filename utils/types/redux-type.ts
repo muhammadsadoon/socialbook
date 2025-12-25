@@ -6,5 +6,6 @@ export default interface initialStateAuthReducer {
         error: boolean,
         errorMessage: string | undefined,
         token: string
-    }
+    },
+    profileUser: null | any
 }

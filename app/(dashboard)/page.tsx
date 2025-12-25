@@ -90,10 +90,10 @@ const DashBoardLayout = ({ children }: DashBoardLayoutType) => {
           isAuth && isCookie && (isMobileOrTablet ? (
             <DrawerToggle close={close} isOpen={opened} >
               <Stack>
-                <Link href={`/user/${(logedUser?.payload?.name)?.split("-")?.join(" ")}`}>
+                <Link href={`/user/${(logedUser?.payload?.name)?.split(" ")?.join("-")}`}>
                   <Group>
                     <Avatar size="md" />
-                    <Text fw={500}>{(logedUser?.payload?.name)?.split(" ").map((item: string) => item.slice(0, 1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
+                    <Text fw={500}>{(logedUser?.payload?.name)?.split("-").map((item: string) => item.slice(0, 1).toUpperCase() + item.slice(1).toLocaleLowerCase()).join(" ")}</Text>
                   </Group>
                 </Link>
                 <Divider />

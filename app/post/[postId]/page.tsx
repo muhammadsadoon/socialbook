@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/utils/redux/store/store';
 import toast, { Toaster } from 'react-hot-toast';
 import { onAuthStateChanged } from 'firebase/auth';
-import { PhotoProvider, PhotoView } from 'react-photo-view';
 import PostImageGrid from '@/components/post-image-grid/post-image-grid';
 const getPostKey = (post: any) => {
   return `${post?.uid ?? "no-uid"}-${post?.createdDate ?? "no-date"}`;
@@ -33,9 +32,7 @@ export default function Page() {
 
   const getPost = async () => {
     const docRef = doc(db, "posts", param); // Get a reference to the document
-
     const docSnap = await getDoc(docRef); // Fetch the document snapshot
-
     if (docSnap.exists()) {
       setPost({ data: docSnap.data(), docID: docSnap.id });
       setIsUserFind(true)
@@ -64,7 +61,6 @@ export default function Page() {
       })
       
     };
-    console.log(post)
 
   // dispatch like handler function
   const handlerLikeBTN = (post: any) => {
@@ -135,7 +131,7 @@ export default function Page() {
             loaderProps={{ type: 'oval' }}
             loading={loading}
           >
-            Go
+            send
           </Button>
         }
         rightSectionWidth={60}
