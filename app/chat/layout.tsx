@@ -29,7 +29,7 @@ export default function ChatSection({ children }: { children: React.ReactNode })
   }
 
   useEffect(() => {
-    document.title = "Chat | SocialBook"
+    document.title = "Chat with friends | Social book"
     handleGetAllUsersFromFB();
   }, []);
   return (
